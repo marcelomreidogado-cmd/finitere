@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FINI Teresópolis · V1 Base Separada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+:root{--paper:#fff5f9;--card:#fffafc;--ink:#2a1018;--ink-soft:#6b4d55;--ink-faint:#b08090;--line:#f0d0dc;--line-soft:#f7e5ec;--fini:#e8266e;--fini-deep:#c01858;--yellow:#f5c000;--green:#3f8f5f;--blue:#3a6ea5;--shadow:0 18px 44px -22px rgba(60,20,40,.35)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;color:var(--ink);background:radial-gradient(1000px 500px at 95% -5%,rgba(232,38,110,.13),transparent 60%),radial-gradient(700px 600px at -5% 110%,rgba(245,192,0,.1),transparent 55%),var(--paper);min-height:100vh;-webkit-font-smoothing:antialiased}
+.app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+.side{background:#1a0810;color:#ffeef5;padding:26px 18px;display:flex;flex-direction:column;gap:5px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.logo{font-family:'Fraunces',serif;font-weight:800;font-size:20px;line-height:1.1;margin-bottom:2px}
+.logo em{color:var(--yellow);font-style:normal}
+.subtt{font-size:10.5px;color:#c8a0b0;letter-spacing:.14em;text-transform:uppercase;margin-bottom:18px}
+.navb{background:none;border:none;color:#d0a0b8;text-align:left;font-family:'DM Sans';font-size:13.5px;font-weight:500;padding:10px 13px;border-radius:11px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:.15s;width:100%}
+.navb:hover{background:#2f1020;color:#fff}.navb.on{background:var(--fini);color:#fff}
+.navb .ic{font-size:15px;width:20px;text-align:center}
+.side .sp{flex:1}.side .fb{font-size:10px;color:#7d4f60;line-height:1.6;margin-top:8px}
+.main{padding:30px 32px 80px;max-width:1200px}
+.htop{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+h1{font-family:'Fraunces',serif;font-weight:800;font-size:clamp(24px,3.5vw,36px);line-height:.98}
+.hsub{color:var(--ink-soft);font-size:13px;margin-top:3px}
+.status{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-soft);background:var(--card);border:1px solid var(--line);border-radius:30px;padding:6px 13px}
+.sdot{width:8px;height:8px;border-radius:50%;background:var(--ink-faint);transition:.3s}
+.sdot.ok{background:var(--green);box-shadow:0 0 8px rgba(63,143,95,.6)}.sdot.load{background:var(--yellow);animation:pulse 1s infinite}.sdot.err{background:var(--fini)}
+@keyframes pulse{50%{opacity:.35}}
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 16px;box-shadow:var(--shadow);margin-bottom:16px}
+.tl{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);font-weight:600}
+.inp{border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-family:'DM Sans';font-size:13.5px;background:#fff;outline:none;transition:.15s}
+.inp:focus{border-color:var(--fini);box-shadow:0 0 0 3px rgba(232,38,110,.12)}
+input[type=date].inp{color-scheme:light}
+.num{font-family:'DM Mono',monospace;text-align:right}
+.arrow{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:#fff;font-size:16px;cursor:pointer;transition:.15s}
+.arrow:hover{background:var(--fini);color:#fff;border-color:var(--fini)}
+.mesatual{font-family:'Fraunces',serif;font-weight:600;font-size:19px;min-width:165px;text-align:center;text-transform:capitalize}
+.btn{border:none;border-radius:11px;padding:10px 16px;font-family:'DM Sans';font-weight:600;font-size:13.5px;cursor:pointer;transition:.16s;display:inline-flex;align-items:center;gap:6px}
+.btn.primary{background:var(--fini);color:#fff}.btn.primary:hover{background:var(--fini-deep);transform:translateY(-2px);box-shadow:0 8px 18px -8px rgba(232,38,110,.6)}
+.btn.primary:disabled{opacity:.45;cursor:default;transform:none;box-shadow:none}
+.btn.ghost{background:#fff;color:var(--ink-soft);border:1px solid var(--line)}.btn.ghost:hover{border-color:var(--ink-faint);color:var(--ink)}
+.btn.danger{color:var(--fini-deep);border-color:#f3b7c9;background:#fff5f8}.btn.danger:hover{background:#ffe8f1;border-color:var(--fini);color:var(--fini)}
+.btn.sm{padding:6px 11px;font-size:12px;border-radius:9px}
+.search{flex:1;min-width:150px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.cat{padding:12px 18px;background:#ffeef5;border-top:1px solid var(--line);font-family:'Fraunces',serif;font-weight:600;font-size:14.5px;display:flex;justify-content:space-between;align-items:center}
+.cat:first-child{border-top:none}.cat .ct{font-family:'DM Mono';font-size:12px;color:var(--fini);font-weight:500}
+.irow{display:flex;align-items:center;gap:10px;padding:7px 18px;border-top:1px solid var(--line-soft)}
+.irow:hover{background:#fff5f8}.irow .nm{flex:1;font-size:13.5px;cursor:default}
+.irow .nm.editable{cursor:text}.irow .nm.editable:hover{color:var(--fini)}
+.irow .nm-hint{font-size:10px;color:var(--ink-faint);margin-left:5px;opacity:0}
+.irow:hover .nm-hint{opacity:1}
+.nm-inp{flex:1;padding:4px 8px;border:1px solid var(--fini);border-radius:8px;font-family:'DM Sans';font-size:13.5px;outline:none;background:#fff}
+.irow .un{font-size:10.5px;color:var(--ink-faint);width:26px}
+.totbar{display:flex;gap:20px;flex-wrap:wrap;background:linear-gradient(110deg,rgba(232,38,110,.07),rgba(255,250,252,.5));border:1px solid var(--line);border-radius:16px;padding:15px 20px;margin-bottom:16px}
+.tt{display:flex;flex-direction:column;gap:3px}
+.tt span{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
+.tt b{font-family:'DM Mono';font-size:clamp(16px,2.5vw,22px);font-weight:500}
+.tt b.hl{color:var(--fini)}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;padding:10px 12px;background:#ffeef5;position:sticky;top:0;z-index:1}
+td{padding:6px 12px;border-top:1px solid var(--line-soft);vertical-align:middle}
+td input,td select{width:100%;border:1px solid transparent;background:transparent;border-radius:8px;padding:6px 8px;font-family:'DM Sans';font-size:13.5px}
+td input:focus,td select:focus{border-color:var(--fini);background:#fff;outline:none}
+td input.num{font-family:'DM Mono';text-align:right}
+tr.wd-dom td:first-child,tr.wd-sab td:first-child{color:var(--fini);font-weight:600}
+tr.hojerow{background:#fff5f8}.neg{color:var(--fini)}
+.rm{background:none;border:none;color:var(--ink-faint);cursor:pointer;font-size:14px;padding:3px 7px;border-radius:6px}
+.rm:hover{color:var(--fini);background:#fce8f0}
+.errmsg{background:#fce8e4;border:1px solid var(--fini);color:var(--fini-deep);border-radius:12px;padding:11px 15px;font-size:13px;margin-bottom:14px}
+.foot{margin-top:18px;color:var(--ink-faint);font-size:11px;line-height:1.7}
+/* MODAL */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;z-index:300;padding:16px}
+.mbox{background:var(--card);border-radius:18px;padding:22px;width:100%;max-width:560px;max-height:85vh;display:flex;flex-direction:column;gap:12px;box-shadow:0 28px 70px rgba(0,0,0,.35)}
+.mbox h2{font-family:'Fraunces',serif;font-size:1.2rem;color:var(--fini)}
+.mscroll{flex:1;overflow-y:auto;border:1px solid var(--line);border-radius:12px}
+.le-row{display:flex;align-items:center;gap:8px;padding:7px 12px;border-bottom:1px solid var(--line-soft)}
+.le-row:last-child{border-bottom:none}
+.le-nm{flex:1;font-size:13.5px}.le-inp{flex:1;padding:5px 9px;border:1px solid var(--line);border-radius:8px;font-family:'DM Sans';font-size:13.5px;outline:none}
+.le-inp:focus{border-color:var(--fini)}.le-sm{padding:5px 9px;border:1px solid var(--line);border-radius:8px;font-family:'DM Sans';font-size:12px;outline:none;background:#fff;width:74px}
+.le-sm:focus{border-color:var(--fini)}
+.add-row{display:flex;gap:8px;flex-wrap:wrap}
+.add-row input,.add-row select{flex:1;min-width:100px;padding:8px 11px;border:1px solid var(--line);border-radius:10px;font-family:'DM Sans';font-size:13.5px;outline:none;background:#fff}
+.add-row input:focus,.add-row select:focus{border-color:var(--fini)}
+.ma{display:flex;justify-content:flex-end;gap:10px}
+.cchips{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.cc{width:18px;height:18px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:.1s;flex-shrink:0}
+.cc.sel{border-color:rgba(0,0,0,.5);transform:scale(1.25)}
+/* ESCALA CALENDAR */
+.egrid{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}
+.ewd{text-align:center;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);font-weight:700;padding:5px 0}
+.ewd.dom,.ewd.sab{color:var(--fini)}
+.ecell{background:var(--card);border:1px solid var(--line);border-radius:13px;display:flex;flex-direction:column;overflow:hidden}
+.ecell.out{background:transparent;border-color:transparent;opacity:.4}
+.ecell.today{border-color:var(--fini);box-shadow:0 0 0 2px rgba(232,38,110,.18)}
+.ecell .dnum{display:flex;justify-content:space-between;align-items:center;padding:6px 8px 4px;font-family:'DM Mono';font-size:12.5px;color:var(--ink-soft);flex-shrink:0}
+.ecell.today .dnum{color:var(--fini);font-weight:700}
+.ecell .badge{font-size:8.5px;text-transform:uppercase;letter-spacing:.05em;background:var(--yellow);color:#3a2a08;border-radius:20px;padding:2px 6px;font-weight:700;cursor:pointer;flex-shrink:0}
+.ecell .badge.off{background:var(--line-soft);color:var(--ink-faint)}
+/* ESCALA ENTRY ROWS */
+.ce-rows{display:flex;flex-direction:column;padding:2px 0 6px;gap:3px}
+.ce-row{display:flex;align-items:center;gap:4px;min-height:24px;margin:0 6px;border-radius:9px;transition:.15s}
+.ce-row.folga-row{background:#fff0f6;border:1px dashed rgba(232,38,110,.35);padding:4px 5px;order:-1}
+.ce-row.folga-row.folga-on{background:linear-gradient(90deg,rgba(232,38,110,.17),#fff7fb);border-style:solid;border-color:rgba(232,38,110,.55);box-shadow:inset 0 0 0 1px rgba(232,38,110,.06)}
+.ce-row.slot-row{background:#fff;border:1px solid var(--line-soft);border-left:4px solid #d8c1ca;padding:3px 5px}
+.ce-row.slot-row.alert{background:#fff8e3;border-color:#f1ce72}
+.ce-tag{font-size:8px;letter-spacing:.06em;text-transform:uppercase;font-weight:800;border-radius:20px;padding:3px 5px;line-height:1;white-space:nowrap;flex-shrink:0}
+.ce-tag.folga{background:var(--fini);color:#fff}
+.ce-tag.hora{background:var(--line-soft);color:var(--ink-soft)}
+.ce-hora{font-family:'DM Mono';font-size:10.5px;color:var(--fini);cursor:pointer;min-width:40px;padding:2px 4px;border-radius:5px;line-height:1.4;text-align:center;flex-shrink:0}
+.ce-hora:hover{background:var(--line-soft)}
+.ce-hora-inp{font-family:'DM Mono';font-size:10.5px;width:46px;border:1px solid var(--fini);border-radius:6px;padding:2px 4px;outline:none;color:var(--fini);flex-shrink:0;text-align:center;background:#fff}
+.ce-select{flex:1;min-width:0;border:1px solid transparent;background:transparent;border-radius:7px;padding:4px 5px;font-family:'DM Sans';font-size:10.5px;color:var(--ink);outline:none}
+.ce-select:focus{border-color:var(--fini);background:#fff}
+.ce-row.folga-row .ce-select{font-weight:800;color:var(--fini-deep)}
+.ce-empty{color:var(--ink-faint);font-style:italic}
+.ce-alert{font-size:10px;color:#b77700;cursor:help;flex-shrink:0}
+.es-help{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--ink-soft);line-height:1.55}
+.ebadges{display:flex;gap:4px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.ecell.warn{border-color:#e2b84d;box-shadow:0 0 0 2px rgba(245,192,0,.18)}
+.ecell .badge.warn{background:#fff0c2;color:#825800}
+.es-mini{font-size:9px;color:var(--ink-faint);line-height:1.2;padding:0 8px 5px}
+.es-mini b{color:var(--fini)}
+/* COMPARATIVO */
+.d-pos{color:var(--green);font-weight:700}.d-neg{color:var(--blue);font-weight:700}.d-z{color:var(--ink-faint)}
+
+/* FOLHA DE PONTO */
+.ponto-help{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 15px;margin-bottom:14px;font-size:12.5px;line-height:1.55;color:var(--ink-soft)}
+.ponto-help b{color:var(--ink)}
+.ponto-scroll{overflow:auto;max-height:66vh}
+.ponto-table{min-width:1180px;font-size:12.5px}
+.ponto-table th{white-space:nowrap;top:0}
+.ponto-table td{padding:5px 8px;white-space:nowrap}
+.ponto-table td input,.ponto-table td select{font-size:12.5px;padding:5px 7px;min-width:0}.ponto-table td select{min-width:138px}.ponto-table .ptype{width:155px;min-width:155px}
+.ponto-table .pdate{font-family:'DM Mono';font-weight:600;color:var(--ink-soft);width:86px}
+.ponto-table .pdom{color:var(--fini);font-weight:700}
+.ponto-table .pfer{background:#fff9dc}
+.ponto-table .pfolga{background:#eef9f2}
+.ponto-table .palert{background:#fff5e7}
+.pmini{font-size:10.5px;color:var(--ink-faint);line-height:1.35;margin-top:3px}
+.psaldo-pos{color:var(--blue)!important}.psaldo-neg{color:#d72638!important}.psaldo-zero{color:var(--ink-faint)!important}
+.pchip{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:3px 8px;border:1px solid var(--line);background:#fff;font-size:11px;color:var(--ink-soft);font-weight:700}
+.pchip.on{background:#fff1f6;color:var(--fini);border-color:#f3b7c9}
+.func-chips{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.func-chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 13px;font-family:'DM Sans';font-size:13px;font-weight:800;color:var(--ink-soft);cursor:pointer;transition:.15s}
+.func-chip:hover{border-color:var(--fini);color:var(--fini)}
+.func-chip.on{background:var(--fini);border-color:var(--fini);color:#fff;box-shadow:0 8px 18px -12px rgba(232,38,110,.8)}
+.troco-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:8px;padding:14px}
+.troco-cell{border:1px solid var(--line-soft);background:#fff;border-radius:12px;padding:8px;display:flex;flex-direction:column;gap:5px}
+.troco-cell .den{font-family:'DM Mono';font-weight:800;font-size:13px;color:var(--ink)}
+.troco-cell .ttl{font-family:'DM Mono';font-size:12px;color:var(--fini);text-align:right}
+.troco-cell input{width:100%;border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-family:'DM Mono';font-size:13px;text-align:right;outline:none}
+.troco-cell input:focus{border-color:var(--fini);box-shadow:0 0 0 3px rgba(232,38,110,.10)}
+.caixa-obs{width:120px!important;min-width:120px!important}
+.pinput-mini{width:78px!important;font-family:'DM Mono'!important;text-align:center!important}
+.pinput-mini[readonly]{background:#fffafc!important;color:var(--ink-soft)!important;cursor:not-allowed!important}
+.pobs{min-width:170px!important}
+@media(max-width:820px){.ponto-scroll{max-height:none}.ponto-table{min-width:1080px}}
+
+@media print{.side,.toolbar,.status,.foot,.btn{display:none}.app{grid-template-columns:1fr}.main{padding:0}}
+@media(max-width:820px){.app{grid-template-columns:1fr}.side{position:static;height:auto;flex-direction:row;flex-wrap:wrap;gap:5px}.side .logo,.side .subtt,.side .sp,.side .fb{width:100%}.main{padding:18px 12px 60px}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useEffect,useCallback,useMemo,useRef}=React;
+const FINI_BUILD="08/06/2026 - TERESOPOLIS_V1_BASE_SEPARADA";
+console.log("FINI BUILD", FINI_BUILD);
+const APP_VERSION="08/06/2026 · TERESÓPOLIS V1 BASE SEPARADA";
+
+/* Firebase */
+const firebaseConfig = {
+  apiKey: "AIzaSyDMHK10rl4wPOGqA1JEKGvsUpfLHsIF3Uo",
+  authDomain: "fini-lancamentos.firebaseapp.com",
+  projectId: "fini-lancamentos",
+  storageBucket: "fini-lancamentos.firebasestorage.app",
+  messagingSenderId: "138559982654",
+  appId: "1:138559982654:web:af2e13d78e73864201956f"
+};
+if(!firebase.apps.length){firebase.initializeApp(firebaseConfig);}
+const db=firebase.firestore();
+try{db.settings({experimentalForceLongPolling:true,merge:true});}catch(e){}
+
+/* Defaults */
+const D_ITENS=["AGUA MINERAL S/ GAS 500ML","AGUA MINERAL C/ GAS 500ML","ALGODAO DOCE CLASSICO 35G","ALGODAO DOCE FRAMBOESA 35G","ALGODAO DOCE MORANGO 35G","ALGODAO DOCE T FRUTTI 35G","ALGODAO DOCE UVA 35G","BALA MEGA XXL COLA 900G","BALEIRO AMARELO C/ ROSA","BEM ESTAR DIET","BEM ESTAR COLAGENO","CAIXA FINI","CH. FÚRIA ÁCIDA 14G","CH. BOLA DE TENIS 200UN","CH. DESTROIER","CH. KLETS MORA-FRAM S/A 200UN","CH. KLETS SANDIA S/AZ 200UN","CH. KLETS TROPICAL S/A 200UN","CH. KLETS WHITE S/AZ 200UN","CH. NUCLEAR GUM GIG 50UN","CHICLE BANANA SPLIT","CHICLE FINIBURGUER 200UN","CHICLE GARRAFAS COLA 200UN","CHICLE KLÉTS MORANGO 30G","CHICLE KLÉTS TUTTI FRUTTI 30G","CHICLE MELAO 200UN","CHICLE PANNAFRAGOLA 200UN","COPO BANANA","COPO DENTADURA","COPO MARSH","COPO TUBES","DESENROLA&ESTIKA FRAMBOESA 27G","DESENROLA&ESTIKA TUTTI-FRUTTI 27G","EMBALAGEM PRESENTEAVEL P. AZUL","FINI BOX","FINI ZUMBIE 200UN","PIRULITO FINIPOP CHERRY+GUM 100UN","PIRULITO FINIPOP VAMPIRO GUM 100UN","SACOLA MEDIA LOJA","SACOLA PEQUENA LOJA","SAQUINHO FINI FRANQUIA C/ZIP","TUBES PINTA LINGUE 15G","TUBES DE IOGURTE 27G","TUBES DE MORANGO 27G","TUBES MORANGO CITR 27G","TUBES TWISTER 27G","TUBES BOO 27G"];
+const D_BALAS=[{cat:"Gigantes",itens:["Banana GG 500G","Garrafa de cola GG 1KG","Golfinho GG 1KG","Morango GG 1KG","Ovo GG 1KG","Rã brilho GG 1KG","Urso GG 1KG"]},{cat:"Gelatinas Nacionais",itens:["Amora 500G","Aro de morango 500G","Banana 500G","Beijo de morango 500G","Caveira Recheada","Dentadura 500G","Dentadura da bruxa 500G","Finiburguer 500G","Frutiê frutas sortidas 200G","Frutiê frutas vermelhas 200G","Frutiê sobremesas 200G","Gomos tangerina 500G","Minhoca brilho 500G","Minhoca cítrica 500G","Mix surpresa","Oceanitos 500G","Ovo frito pequeno 500G","Polvo pequeno 500G","Rato 500G","Regaliz terror","Sapo pequeno 500G","Sorvetinho 80G","Ursinho brilho 500G"]},{cat:"Gelatinas Exclusivas",itens:["ALUBIAS","AROS SURTIDOS","Amora azul 250UN","Amora multicolor 250UN","Bananas recheadas 1KG","Beijos twisty morango 1KG","Boca de morango 250UN","CEREJA BRILHO","Cereja drageada","Coração de pêssego 1KG","Coração recheados 1KG","Coração tricolor 1KG","EURO DE MORANGO","Fatias melancia recheadas 1KG","Fruta gourmet","Garrafa de cola cítrica 1KG","Lagrimas 1KG","Limões grandes 1KG","Maças 1KG","Melancia fatiada 1KG","Morango brilho 1KG","Morango cítrico 1KG","Morangos açucarados","Morangos recheados 1KG","Orca 1KG","Pimenta picante 1KG","Polvo cítrico 1KG","SORTIDO TERROR","Tortugas 1KG","Tropical jelly 1KG","Tubarão 1KG","zapatilha"]},{cat:"Tubes Nacionais",itens:["TUBES DESENROLA E ESTICA FRAM.","Tubes de Iogurte","Tubes pinta lingua","Tubes morango 240G/80G","Tubes morango cítrico 240G/80G","Tubes sabores sortidos 80G","Tubes tropical 80G","Tubes tutti fruti 240G/80G","Tubes twister 240G/80G","Tubes twister cítrico 80G","Tubes uva 80g","Tubes uva cítrico 80g"]},{cat:"Tubes Exclusivos",itens:["Chewy chips 1KG","Corda de cereja PT 30UN","Espagueti fresa PT 200UN","Espagueti multifuti PT 200UN","Finipalo morango PT 30UN","Jumbo colorido 30UN","Jumbo melancia citrico 30UN","Jumbo melancia 30UN","Jumbo morango citrico PT 30UN","Jumbo morango PT 30UN","Jumbo morango com nata 30UN","Jumbo tijolinho morango 30UN","Jumbo torcida morango PT 30UN","Jumbo torcida roja PT 30UN","Jumbo torcido sorvete 30UN","Jumbo tornado brilho PT 30UN","Jumbo tornado pica PT 30UN","LÍNGUA DE COLA","Língua de framboesa PT 200UN","Língua de maça verde PT 200UN","Língua de melancia PT 200UN","Língua de morango PT 200UN","Língua multifruti PT 200UN","Linhas de framboesa PT 200UN","Linhas de morango PT 200UN","Maxi morango citrico 70UN","Maxi morango recheado 70UN","Mix regaliz brilho 1KG","Spiro morango 200UN","Taco relleno negro 1KG","Tacote morango 1KG","Tacote negro 1KG","Tijolinho morango 250UN","Tijolinho colorido cítrico 1KG","Tijolinho nata-morango 250UN","Tornado recheado cítrico 200UN","Tornado recheado 70UN","Tubes manga 200UN","Tubes morango nata-baunilha 200UN"]},{cat:"Chicles",itens:["Chicle bola de tenis GG 75UN","Chicle bolos pequenos 1KG","Chicle clássicos 500G","Chicle finiburguer 200UN","Chicle fúria ácida 140G","Chicle melancia 500G","Chicle morango 500G","Chicle ovo de dinossauro 500G","Chicle salada de frutas 500G"]},{cat:"Marsh's",itens:["Marsh morango com nata 200UN","Marsh torção recheado colorido 200G","Marsh torção recheado azul 200G","Marsh torção recheado rosa 200G","Marsh vulcão azul 200G","Marsh vulcão rosa 200G","Marsh vulcão sortidos 150UN"]}];
+const D_ESC=[{id:"01",nome:"Daphne",hora:"9:40",cor:"#d8442e",jornada:"7:20h",regime:"6x1"},{id:"02",nome:"Weslayne",hora:"14:00",cor:"#e8a23a",jornada:"7:20h",regime:"6x1"},{id:"03",nome:"Leticia",hora:"14:00",cor:"#3f8f5f",jornada:"7:20h",regime:"6x1"}];
+const H_SEMANA=["9:40","14:00","14:00"];
+const H_DOM_FER=["11:00","15:00",""];
+const D_CON=["Daphne","Weslayne","Leticia"];
+const CORES=["#d8442e","#e8a23a","#3f8f5f","#3a6ea5","#9c27b0","#ff6d00","#00838f","#558b2f","#c62828","#e91e63"];
+const MOTIVOS=["Vencimento","Avaria","Queda/Acidente","Consumo interno","Erro de pesagem","Outro"];
+const FORMAS=["Dinheiro","PIX","Débito","Crédito","Vale Refeição"];
+const DENOMS_TROCO=[100,50,20,10,5,2,1,0.50,0.25,0.10,0.05];
+const PRECO_CONSUMO_KG=75.90;
+const MESES=["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+const WD=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+const PONTO_OCORRENCIAS=["Feriado","Folga","Folga extra","Atestado"];
+const PONTO_JORNADAS=["7:20h","7h"];
+const PONTO_REGIMES=["6x1","5x2"];
+const TARA_ACRILICO_PADRAO=0.732;
+
+
+/* Helpers */
+const pad=n=>String(n).padStart(2,"0");
+const keyMes=(a,m)=>`${a}-${pad(m+1)}`;
+const hjD=new Date();
+const HOJE=`${hjD.getFullYear()}-${pad(hjD.getMonth()+1)}-${pad(hjD.getDate())}`;
+const brl=v=>(Number(v)||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+const kgF=v=>(Number(v)||0).toLocaleString("pt-BR",{minimumFractionDigits:3,maximumFractionDigits:3})+" kg";
+const num=v=>{const n=parseFloat(String(v||"").replace(",","."));return isNaN(n)?0:n;};
+function somaExpressao(v){
+  const raw=String(v??"").trim();
+  if(!raw)return {ok:true,total:0,termos:[]};
+  const s=raw.replace(/\s/g,"").replace(/,/g,".").replace(/−/g,"-");
+  if(!/^[+-]?\d*\.?\d+(?:[+-]\d*\.?\d+)*$/.test(s))return {ok:false,total:num(raw),termos:[]};
+  const termos=(s.match(/[+-]?\d*\.?\d+/g)||[]).map(Number).filter(n=>!isNaN(n));
+  return {ok:true,total:termos.reduce((a,n)=>a+n,0),termos};
+}
+function fmtCalcValor(v,dec=3,fixo=false){
+  const n=Number(v)||0;
+  let s=n.toFixed(dec).replace(".",",");
+  if(!fixo&&s.includes(","))s=s.replace(/0+$/," ").replace(/,\s$/," ").trim();
+  return s;
+}
+function normalizaSomaCampo(v,dec=0){
+  const r=somaExpressao(v);
+  if(!r.ok)return String(v??"");
+  return fmtCalcValor(r.total,dec,dec>0);
+}
+function normalizaKgCampo(v,tara=TARA_ACRILICO_PADRAO,descontar=true){
+  const r=somaExpressao(v);
+  if(!r.ok)return String(v??"");
+  let total=r.total;
+  if(descontar){
+    const qtdTara=r.termos.filter(n=>n>tara).length;
+    total=Math.max(0,total-(qtdTara*tara));
+  }
+  return fmtCalcValor(total,3,true);
+}
+const diMes=(a,m)=>new Date(a,m+1,0).getDate();
+const isoDia=(a,m,d)=>`${a}-${pad(m+1)}-${pad(d)}`;
+const fmtD=iso=>iso?iso.split("-").reverse().join("/"):"—";
+
+function traduzErroFirebase(e,acao="acessar"){
+  const code=e?.code||"erro-desconhecido";
+  const msg=e?.message||"Sem detalhe técnico.";
+  if(String(code).includes("permission-denied")){
+    return {titulo:"Sem permissão no Firestore",detalhe:`O Firebase recusou ${acao}. Código: ${code}. Normalmente isso é regra do Firestore bloqueando leitura/gravação nas coleções fini_*.`};
+  }
+  if(String(code).includes("unavailable")||String(msg).toLowerCase().includes("network")){
+    return {titulo:"Falha de conexão",detalhe:`Não consegui falar com o Firestore. Código: ${code}. Verifique internet, bloqueio do navegador ou instabilidade.`};
+  }
+  if(String(code).includes("failed-precondition")){
+    return {titulo:"Configuração pendente no Firestore",detalhe:`O Firestore retornou ${code}. Pode haver índice/regra/configuração pendente no Firebase.`};
+  }
+  if(String(code).includes("invalid-argument")||String(msg).toLowerCase().includes("unsupported field value")||String(msg).toLowerCase().includes("synthetic")){
+    return {titulo:"Erro interno no botão Salvar",detalhe:`O sistema tentou enviar um dado inválido para o Firestore. Corrigido nesta versão para salvar somente os dados da tela, sem enviar o evento do clique.`};
+  }
+  return {titulo:"Erro no Firebase",detalhe:`Código: ${code}. ${msg}`};
+}
+
+/* useFireDoc */
+function useFireDoc(col,id,init){
+  const [data,setData]=useState(()=>JSON.parse(JSON.stringify(init)));
+  const [status,setStatus]=useState("load");
+  const [dirty,setDirty]=useState(false);
+  const [erro,setErro]=useState(null);
+  const reload=useCallback(async()=>{setStatus("load");setErro(null);try{const s=await db.collection(col).doc(id).get();setData(s.exists?{...JSON.parse(JSON.stringify(init)),...s.data()}:JSON.parse(JSON.stringify(init)));setDirty(false);setStatus("ok");}catch(e){console.error("Firebase read error",col,id,e);setErro(traduzErroFirebase(e,"ler os dados"));setStatus("err");}},[col,id]);
+  useEffect(()=>{reload();},[reload]);
+  const save=async(d2)=>{
+    // Quando usado direto em onClick, o React envia o evento do clique como parâmetro.
+    // Se esse evento for gravado no Firestore, a gravação falha.
+    // Por isso, aqui ignoramos qualquer evento de clique/formulário e salvamos o estado atual.
+    const recebeuEvento=d2&&(d2.nativeEvent||d2.preventDefault||d2.target||d2.currentTarget);
+    const payload=(!d2||recebeuEvento)?data:d2;
+    setStatus("load");
+    setErro(null);
+    try{
+      await db.collection(col).doc(id).set({...payload,atualizadoEm:new Date().toISOString()},{merge:true});
+      if(d2&&!recebeuEvento)setData(d2);
+      setDirty(false);
+      setStatus("ok");
+      return true;
+    }catch(e){
+      console.error("Firebase save error",col,id,e);
+      setErro(traduzErroFirebase(e,"salvar os dados"));
+      setStatus("err");
+      return false;
+    }
+  };
+  const deleteDoc=async()=>{
+    setStatus("load");
+    setErro(null);
+    try{
+      await db.collection(col).doc(id).delete();
+      setData(JSON.parse(JSON.stringify(init)));
+      setDirty(false);
+      setStatus("ok");
+      return true;
+    }catch(e){
+      console.error("Firebase delete error",col,id,e);
+      setErro(traduzErroFirebase(e,"excluir a contagem"));
+      setStatus("err");
+      return false;
+    }
+  };
+  const update=p=>{setData(d=>({...d,...(typeof p==="function"?p(d):p)}));setDirty(true);};
+  const updateAndSave=async(p)=>{
+    const patch=typeof p==="function"?p(data):p;
+    const next={...data,...patch};
+    setData(next);
+    setDirty(true);
+    return await save(next);
+  };
+  const clearLocal=(blank)=>{setData(JSON.parse(JSON.stringify(blank||init)));setDirty(false);setErro(null);setStatus("ok");};
+  return{data,update,updateAndSave,status,save,reload,deleteDoc,clearLocal,dirty,erro};
+}
+
+/* Shared UI */
+function Status({status,dirty,erro}){return <div className="status"><span className={"sdot "+(status==="ok"?"ok":status==="load"?"load":"err")}></span>{status==="load"?"Sincronizando…":status==="err"?(erro?.titulo||"Erro técnico") :dirty?"Não salvo":"Tudo salvo"}</div>;}
+function MonthNav({ano,mes,setAno,setMes,dirty}){const mv=d=>{if(dirty&&!confirm("Alterações não salvas. Continuar?"))return;let m=mes+d,a=ano;if(m<0){m=11;a--;}if(m>11){m=0;a++;}setMes(m);setAno(a);};return<div className="tl"><button className="arrow" onClick={()=>mv(-1)}>‹</button><div className="mesatual">{MESES[mes]} {ano}</div><button className="arrow" onClick={()=>mv(1)}>›</button></div>;}
+function ErrBox({status,erro}){return status==="err"?<div className="errmsg"><b>{erro?.titulo||"Erro técnico capturado no Firebase"}</b><br/>{erro?.detalhe||"Esta versão não usa mais a mensagem antiga. Se você ainda vê a frase antiga, o arquivo aberto não é o index.html atualizado."}<br/><span style={{fontSize:11,opacity:.75}}>Versão: {FINI_BUILD}</span></div>:null;}
+
+/* ══ MODAL: Itens ══ */
+function ModalItens({itens,onSave,onClose}){
+  const [lista,setLista]=useState([...itens]);
+  const [novo,setNovo]=useState("");
+  const [ei,setEi]=useState(null);
+  const [ev,setEv]=useState("");
+  const confirm_=i=>{setLista(l=>{const n=[...l];n[i]=ev.trim().toUpperCase();return n;});setEi(null);};
+  return <div className="ov" onClick={e=>e.target===e.currentTarget&&onClose()}>
+    <div className="mbox">
+      <h2>⚙️ Catálogo · Itens Quiosque</h2>
+      <div className="mscroll">{lista.map((item,i)=><div className="le-row" key={i}>{ei===i?<><input className="le-inp" value={ev} onChange={e=>setEv(e.target.value)} onKeyDown={e=>e.key==="Enter"&&confirm_(i)} autoFocus/><button className="rm" onClick={()=>confirm_(i)}>✓</button><button className="rm" onClick={()=>setEi(null)}>✕</button></>:<><span className="le-nm">{item}</span><button className="rm" onClick={()=>{setEi(i);setEv(item);}}>✏️</button><button className="rm" onClick={()=>setLista(l=>l.filter((_,j)=>j!==i))}>🗑️</button></>}</div>)}</div>
+      <div className="add-row"><input placeholder="Novo item…" value={novo} onChange={e=>setNovo(e.target.value)} onKeyDown={e=>e.key==="Enter"&&novo.trim()&&(setLista(l=>[...l,novo.trim().toUpperCase()]),setNovo(""))}/><button className="btn ghost sm" onClick={()=>novo.trim()&&(setLista(l=>[...l,novo.trim().toUpperCase()]),setNovo(""))}>+ Adicionar</button></div>
+      <div className="ma"><button className="btn ghost" onClick={onClose}>Cancelar</button><button className="btn primary" onClick={()=>onSave(lista)}>💾 Salvar</button></div>
+    </div>
+  </div>;
+}
+
+/* ══ MODAL: Balas ══ */
+function ModalBalas({balas,onSave,onClose}){
+  const [cats,setCats]=useState(JSON.parse(JSON.stringify(balas)));
+  const [cs,setCs]=useState(0);
+  const [novaC,setNovaC]=useState("");
+  const [novoI,setNovoI]=useState("");
+  const [ei,setEi]=useState(null);
+  const [ev,setEv]=useState("");
+  const cat=cats[cs]||{cat:"",itens:[]};
+  const addCat=()=>{if(!novaC.trim())return;const n=[...cats,{cat:novaC.trim(),itens:[]}];setCats(n);setCs(n.length-1);setNovaC("");};
+  const delCat=()=>{if(!confirm("Excluir esta categoria?"))return;setCats(c=>c.filter((_,i)=>i!==cs));setCs(p=>Math.max(0,p-1));};
+  const addItem=()=>{if(!novoI.trim())return;setCats(c=>{const n=JSON.parse(JSON.stringify(c));n[cs].itens.push(novoI.trim());return n;});setNovoI("");};
+  const delItem=ii=>setCats(c=>{const n=JSON.parse(JSON.stringify(c));n[cs].itens.splice(ii,1);return n;});
+  const confirmEdit=()=>{setCats(c=>{const n=JSON.parse(JSON.stringify(c));n[cs].itens[ei]=ev.trim();return n;});setEi(null);};
+  return <div className="ov" onClick={e=>e.target===e.currentTarget&&onClose()}>
+    <div className="mbox" style={{maxWidth:660}}>
+      <h2>⚙️ Catálogo · Balas KG</h2>
+      <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"center"}}>
+        {cats.map((c,i)=><button key={i} className={"btn sm "+(cs===i?"primary":"ghost")} onClick={()=>{setCs(i);setEi(null);}}>{c.cat}</button>)}
+        <input className="inp" style={{width:130,padding:"5px 10px",fontSize:12.5}} placeholder="Nova categoria…" value={novaC} onChange={e=>setNovaC(e.target.value)} onKeyDown={e=>e.key==="Enter"&&addCat()}/>
+        <button className="btn ghost sm" onClick={addCat}>+</button>
+        <button className="rm" onClick={delCat}>🗑️</button>
+      </div>
+      <div className="mscroll">{cat.itens.map((item,ii)=><div className="le-row" key={ii}>{ei===ii?<><input className="le-inp" value={ev} onChange={e=>setEv(e.target.value)} onKeyDown={e=>e.key==="Enter"&&confirmEdit()} autoFocus/><button className="rm" onClick={confirmEdit}>✓</button><button className="rm" onClick={()=>setEi(null)}>✕</button></>:<><span className="le-nm">{item}</span><button className="rm" onClick={()=>{setEi(ii);setEv(item);}}>✏️</button><button className="rm" onClick={()=>delItem(ii)}>🗑️</button></>}</div>)}{!cat.itens.length&&<div style={{padding:"18px 16px",color:"var(--ink-faint)",fontSize:13}}>Nenhum item nesta categoria.</div>}</div>
+      <div className="add-row"><input placeholder="Novo item nesta categoria…" value={novoI} onChange={e=>setNovoI(e.target.value)} onKeyDown={e=>e.key==="Enter"&&addItem()}/><button className="btn ghost sm" onClick={addItem}>+ Adicionar</button></div>
+      <div className="ma"><button className="btn ghost" onClick={onClose}>Cancelar</button><button className="btn primary" onClick={()=>onSave(cats)}>💾 Salvar</button></div>
+    </div>
+  </div>;
+}
+
+/* ══ MODAL: Func Escala ══ */
+function ModalFuncEsc({funcs,onSave,onClose}){
+  const normaliza=(arr)=>arr.map((f,i)=>typeof f==="string"
+    ?{id:String(101+i),nome:f,cor:CORES[i%CORES.length],jornada:"7:20h",regime:"6x1"}
+    :{id:String(f.id||f.codigo||f.pin||String(101+i)),nome:f.nome||"",cor:f.cor||CORES[i%CORES.length],jornada:f.jornada||"7:20h",regime:f.regime||"6x1"}
+  ).filter(f=>f.nome.trim());
+  const [lista,setLista]=useState(()=>normaliza(funcs));
+  const nextId=()=>{
+    const nums=lista.map(f=>parseInt(String(f.id||"").replace(/\D/g,""),10)).filter(n=>!isNaN(n));
+    return String(nums.length?Math.max(...nums)+1:101);
+  };
+  const [novo,setNovo]=useState({id:"",nome:"",cor:CORES[0],jornada:"7:20h",regime:"6x1"});
+  const upd=(i,k,v)=>setLista(l=>{const n=[...l];n[i]={...n[i],[k]:v};return n;});
+  const add=()=>{if(!novo.nome.trim())return;setLista(l=>[...l,{id:String(novo.id||nextId()).trim(),nome:novo.nome.trim(),cor:novo.cor,jornada:novo.jornada||"7:20h",regime:novo.regime||"6x1"}]);setNovo({id:"",nome:"",cor:CORES[0],jornada:"7:20h",regime:"6x1"});};
+  const salvar=()=>{
+    const limpos=lista.filter(f=>f.nome.trim()).map((f,i)=>({id:String(f.id||String(101+i)).trim(),nome:f.nome.trim(),cor:f.cor||CORES[0],jornada:f.jornada||"7:20h",regime:f.regime||"6x1"}));
+    const ids=limpos.map(f=>f.id).filter(Boolean);
+    if(new Set(ids).size!==ids.length){alert("Existe ID repetido. Cada funcionária precisa ter um ID único.");return;}
+    onSave(limpos);
+  };
+  return <div className="ov" onClick={e=>e.target===e.currentTarget&&onClose()}>
+    <div className="mbox" style={{maxWidth:820}}>
+      <h2>👩 Funcionárias · Escala e Ponto</h2>
+      <div style={{fontSize:12,color:"var(--ink-soft)",lineHeight:1.5}}>Cadastre o ID de ponto de cada funcionária. A marcação da folha será feita digitando esse ID e usando o horário do computador.</div>
+      <div className="mscroll">{lista.map((f,i)=><div className="le-row" key={i}>
+        <input className="le-sm" style={{width:76}} value={f.id||""} onChange={e=>upd(i,"id",e.target.value.replace(/\D/g,""))} placeholder="ID" title="ID usado para bater ponto"/>
+        <input className="le-inp" value={f.nome} onChange={e=>upd(i,"nome",e.target.value)} placeholder="Nome da funcionária"/>
+        <select className="le-sm" style={{width:96}} value={f.jornada||"7:20h"} onChange={e=>upd(i,"jornada",e.target.value)} title="Jornada padrão da funcionária">{PONTO_JORNADAS.map(j=><option key={j}>{j}</option>)}</select>
+        <select className="le-sm" style={{width:82}} value={f.regime||"6x1"} onChange={e=>upd(i,"regime",e.target.value)} title="Regime de escala">{PONTO_REGIMES.map(r=><option key={r}>{r}</option>)}</select>
+        <div className="cchips">{CORES.map(c=><span key={c} className={"cc"+(f.cor===c?" sel":"")} style={{background:c}} onClick={()=>upd(i,"cor",c)}/>)}</div>
+        <button className="rm" onClick={()=>setLista(l=>l.filter((_,j)=>j!==i))}>🗑️</button>
+      </div>)}</div>
+      <div className="add-row">
+        <input placeholder="ID" value={novo.id} onChange={e=>setNovo(p=>({...p,id:e.target.value.replace(/\D/g,"")}))} style={{width:80}}/>
+        <input placeholder="Nova funcionária…" value={novo.nome} onChange={e=>setNovo(p=>({...p,nome:e.target.value}))} onKeyDown={e=>e.key==="Enter"&&add()} style={{flex:1,minWidth:150}}/>
+        <select value={novo.jornada||"7:20h"} onChange={e=>setNovo(p=>({...p,jornada:e.target.value}))} style={{width:110}}>{PONTO_JORNADAS.map(j=><option key={j}>{j}</option>)}</select>
+        <select value={novo.regime||"6x1"} onChange={e=>setNovo(p=>({...p,regime:e.target.value}))} style={{width:90}}>{PONTO_REGIMES.map(r=><option key={r}>{r}</option>)}</select>
+        <div className="cchips">{CORES.map(c=><span key={c} className={"cc"+(novo.cor===c?" sel":"")} style={{background:c}} onClick={()=>setNovo(p=>({...p,cor:c}))}/>)}</div>
+        <button className="btn ghost sm" onClick={add}>+ Adicionar</button>
+      </div>
+      <div className="ma"><button className="btn ghost" onClick={onClose}>Cancelar</button><button className="btn primary" onClick={salvar}>💾 Salvar</button></div>
+    </div>
+  </div>;
+}
+
+/* ══ MODAL: Func Consumo ══ */
+function ModalFuncCon({funcs,onSave,onClose}){
+  const [lista,setLista]=useState([...funcs]);
+  const [novo,setNovo]=useState("");
+  const [ei,setEi]=useState(null);
+  const [ev,setEv]=useState("");
+  const confirm_=i=>{setLista(l=>{const n=[...l];n[i]=ev.trim();return n;});setEi(null);};
+  return <div className="ov" onClick={e=>e.target===e.currentTarget&&onClose()}>
+    <div className="mbox" style={{maxWidth:400}}>
+      <h2>👩 Funcionárias · Consumo</h2>
+      <div className="mscroll">{lista.map((f,i)=><div className="le-row" key={i}>{ei===i?<><input className="le-inp" value={ev} onChange={e=>setEv(e.target.value)} onKeyDown={e=>e.key==="Enter"&&confirm_(i)} autoFocus/><button className="rm" onClick={()=>confirm_(i)}>✓</button><button className="rm" onClick={()=>setEi(null)}>✕</button></>:<><span className="le-nm">{f}</span><button className="rm" onClick={()=>{setEi(i);setEv(f);}}>✏️</button><button className="rm" onClick={()=>setLista(l=>l.filter((_,j)=>j!==i))}>🗑️</button></>}</div>)}</div>
+      <div className="add-row"><input placeholder="Nome da funcionária…" value={novo} onChange={e=>setNovo(e.target.value)} onKeyDown={e=>e.key==="Enter"&&novo.trim()&&(setLista(l=>[...l,novo.trim()]),setNovo(""))}/><button className="btn ghost sm" onClick={()=>novo.trim()&&(setLista(l=>[...l,novo.trim()]),setNovo(""))}>+ Adicionar</button></div>
+      <div className="ma"><button className="btn ghost" onClick={onClose}>Cancelar</button><button className="btn primary" onClick={()=>onSave(lista)}>💾 Salvar</button></div>
+    </div>
+  </div>;
+}
+
+/* ══ ESCALA: Componentes ══ */
+const listaFuncionarias=arr=>(arr||[]).map((f,i)=>typeof f==="string"?{id:String(101+i),nome:f,cor:CORES[i%CORES.length],jornada:"7:20h",regime:"6x1"}:{id:String(f.id||f.codigo||f.pin||String(101+i)),nome:f.nome||"",cor:f.cor||CORES[i%CORES.length],jornada:f.jornada||"7:20h",regime:f.regime||"6x1"}).filter(f=>f.nome.trim());
+const corFunc=(funcs,nome)=>funcs.find(f=>f.nome===nome)?.cor||"#d8c1ca";
+const horariosPadrao=especial=>especial?H_DOM_FER:H_SEMANA;
+const escalaBase=(especial,funcs)=>({folga:"",slots:horariosPadrao(especial).map(h=>({hora:h,nome:""}))});
+function normalizarEscalaDia(raw,especial,funcs){
+  const base=escalaBase(especial,funcs);
+  if(!raw)return base;
+  let folga="",slots=[];
+  if(Array.isArray(raw)){
+    const off=raw.find(e=>e&&e.folga);
+    folga=off?.nome||"";
+    slots=raw.filter(e=>e&&!e.folga).map(e=>({hora:e.hora||"",nome:e.nome||""}));
+  }else if(raw&&typeof raw==="object"){
+    folga=raw.folga||raw.folgaNome||"";
+    slots=Array.isArray(raw.slots)?raw.slots.map(s=>({hora:s.hora||"",nome:s.nome||""})):[];
+  }
+  slots=base.slots.map((def,i)=>({hora:slots[i]?.hora||def.hora,nome:slots[i]?.nome??def.nome}));
+  return {folga,slots};
+}
+function conflitosEscalaDia(esc){
+  const nomes=esc.slots.map(s=>s.nome).filter(Boolean);
+  const avisos=[];
+  if(esc.folga&&nomes.includes(esc.folga))avisos.push(`${esc.folga} está em folga e também escalada`);
+  const rep=nomes.filter((n,i)=>nomes.indexOf(n)!==i);
+  if(rep.length)avisos.push(`Funcionária repetida no mesmo dia: ${[...new Set(rep)].join(", ")}`);
+  return avisos;
+}
+
+function EscalaSlot({slot,idx,funcs,onChange,alerta}){
+  const [editH,setEditH]=useState(false);
+  const [tmpH,setTmpH]=useState(slot.hora);
+  useEffect(()=>setTmpH(slot.hora),[slot.hora]);
+  const commit=()=>{onChange({...slot,hora:(tmpH||slot.hora).trim()});setEditH(false);};
+  return(
+    <div className={"ce-row slot-row"+(alerta?" alert":"")} style={{borderLeftColor:corFunc(funcs,slot.nome)}}>
+      <span className="ce-tag hora">{idx+1}</span>
+      {editH
+        ?<input className="ce-hora-inp" value={tmpH} onChange={e=>setTmpH(e.target.value)} onBlur={commit} onKeyDown={e=>{if(e.key==="Enter")commit();if(e.key==="Escape")setEditH(false);}} autoFocus/>
+        :<span className="ce-hora" onClick={()=>{setTmpH(slot.hora);setEditH(true);}} title="Clique para editar o horário">{slot.hora||"aberto"}</span>
+      }
+      <select className="ce-select" value={slot.nome||""} onChange={e=>onChange({...slot,nome:e.target.value})} title="Escolher funcionária do horário">
+        <option value="">Escolher…</option>
+        {funcs.map(f=><option key={f.nome} value={f.nome}>{f.nome}</option>)}
+      </select>
+      {alerta&&<span className="ce-alert" title={alerta}>⚠</span>}
+    </div>
+  );
+}
+
+function EscalaFolgaRow({nome,funcs,onChange,alerta}){
+  return(
+    <div className={"ce-row folga-row"+(nome?" folga-on":"")}>
+      <span className="ce-tag folga">Folga</span>
+      <select className="ce-select" value={nome||""} onChange={e=>onChange(e.target.value)} title="Escolher funcionária de folga no dia">
+        <option value="">Sem folga definida</option>
+        {funcs.map(f=><option key={f.nome} value={f.nome}>{f.nome}</option>)}
+      </select>
+      {alerta&&<span className="ce-alert" title={alerta}>⚠</span>}
+    </div>
+  );
+}
+
+/* ══ ESTOQUE ══ */
+function Estoque({itens,onSaveItens}){
+  const [data,setData]=useState(HOJE);
+  const [busca,setBusca]=useState("");
+  const [showM,setShowM]=useState(false);
+  const [editKey,setEditKey]=useState(null);
+  const [editVal,setEditVal]=useState("");
+  const doc=useFireDoc("fini_teresopolis_estoque_quiosque",data,{data,itens:{}});
+  const filtro=itens.filter(n=>n.toLowerCase().includes(busca.toLowerCase()));
+  const totalUn=itens.reduce((s,n)=>s+num(doc.data.itens?.[n]),0);
+  const preench=itens.filter(n=>num(doc.data.itens?.[n])>0).length;
+  const set=(n,v)=>doc.update(d=>({itens:{...d.itens,[n]:v}}));
+  const startRename=n=>{setEditKey(n);setEditVal(n);};
+  const confirmRename=()=>{if(editKey&&editVal.trim()&&editVal.trim()!==editKey)onSaveItens(itens.map(x=>x===editKey?editVal.trim().toUpperCase():x));setEditKey(null);};
+  const excluirContagem=async()=>{
+    const temDados=itens.some(n=>num(doc.data.itens?.[n])>0);
+    const aviso=temDados?`Excluir a contagem de ${fmtD(data)}? Os números preenchidos desta data serão apagados do Firebase.`:`Não há valores preenchidos na tela. Mesmo assim deseja apagar qualquer contagem salva em ${fmtD(data)}?`;
+    if(!confirm(aviso))return;
+    await doc.deleteDoc();
+  };
+  const salvarELimpar=async()=>{
+    const ok=await doc.save();
+    if(ok){
+      const zerados=Object.fromEntries(itens.map(n=>[n,"0"]));
+      doc.clearLocal({data,itens:zerados});
+    }
+  };
+  return <>
+    <div className="htop"><div><h1>Itens do Quiosque</h1><div className="hsub">Contagem unitária · {itens.length} itens · <span style={{color:"var(--fini)"}}>duplo clique na linha para renomear</span></div></div><Status {...doc}/></div>
+    <ErrBox {...doc}/>
+    <div className="toolbar">
+      <div className="tl">
+        <div className="field"><label>Data da contagem</label><input className="inp" type="date" value={data} onChange={e=>setData(e.target.value)}/></div>
+        <div className="field search"><label>Buscar item</label><input className="inp" placeholder="parte do nome…" value={busca} onChange={e=>setBusca(e.target.value)}/></div>
+      </div>
+      <div className="tl"><button className="btn ghost sm" onClick={()=>setShowM(true)}>⚙️ Gerir Catálogo</button><button className="btn ghost sm danger" onClick={excluirContagem} disabled={doc.status==="load"}>🗑️ Excluir contagem</button><button className="btn primary" onClick={salvarELimpar} disabled={!doc.dirty||doc.status==="load"}>💾 Salvar contagem</button></div>
+    </div>
+    <div className="totbar"><div className="tt"><span>Itens preenchidos</span><b>{preench}/{itens.length}</b></div><div className="tt"><span>Total unidades</span><b className="hl">{totalUn.toLocaleString("pt-BR")}</b></div></div>
+    <div className="panel">
+      {filtro.map(n=>(
+        <div className="irow" key={n} onDoubleClick={e=>{if(e.target.closest("input,select,button"))return;startRename(n);}} title="Duplo clique na linha para renomear">
+          {editKey===n
+            ?<input className="nm-inp" value={editVal} onChange={e=>setEditVal(e.target.value)} onBlur={confirmRename} onKeyDown={e=>{e.key==="Enter"&&confirmRename();e.key==="Escape"&&setEditKey(null);}} autoFocus/>
+            :<span className="nm editable" title="Duplo clique na linha para renomear">{n}</span>
+          }
+          <input className="inp num" style={{width:90}} type="text" inputMode="decimal" value={doc.data.itens?.[n]??""} placeholder="0" onChange={e=>set(n,e.target.value)} onBlur={e=>set(n,normalizaSomaCampo(e.target.value,0))} title="Pode digitar soma: 1+1"/>
+          <span className="un">un</span>
+        </div>
+      ))}
+      {!filtro.length&&<div className="irow"><span className="nm" style={{color:"var(--ink-faint)"}}>Nenhum item encontrado.</span></div>}
+    </div>
+    <div className="foot">Salvo em <b>fini_teresopolis_estoque_quiosque/{data}</b>. Após salvar, a tela zera para a próxima contagem. Use “Excluir contagem” para apagar somente a contagem da data selecionada.</div>
+    {showM&&<ModalItens itens={itens} onSave={l=>{onSaveItens(l);setShowM(false);}} onClose={()=>setShowM(false)}/>}
+  </>;
+}
+
+/* ══ BALAS KG ══ */
+function Balas({balas,onSaveBalas}){
+  const [data,setData]=useState(HOJE);
+  const [busca,setBusca]=useState("");
+  const [showM,setShowM]=useState(false);
+  const [descontarTara,setDescontarTara]=useState(true);
+  const [taraAcrilico,setTaraAcrilico]=useState("0,732");
+  const [editKey,setEditKey]=useState(null); // {cat, name}
+  const [editVal,setEditVal]=useState("");
+  const doc=useFireDoc("fini_teresopolis_balas_kg",data,{data,pesos:{},pacotes:{}});
+  const totalKg=balas.reduce((s,c)=>s+c.itens.reduce((a,n)=>a+num(doc.data.pesos?.[n]),0),0);
+  const totalPct=balas.reduce((s,c)=>s+c.itens.reduce((a,n)=>a+num(doc.data.pacotes?.[n]),0),0);
+  const setKg=(n,v)=>doc.update(d=>({pesos:{...d.pesos,[n]:v}}));
+  const setPct=(n,v)=>doc.update(d=>({pacotes:{...d.pacotes,[n]:v}}));
+  const startRename=(cat,name)=>{setEditKey({cat,name});setEditVal(name);};
+  const confirmRename=()=>{if(editKey&&editVal.trim()&&editVal.trim()!==editKey.name)onSaveBalas(balas.map(c=>c.cat===editKey.cat?{...c,itens:c.itens.map(x=>x===editKey.name?editVal.trim():x)}:c));setEditKey(null);};
+  const excluirContagem=async()=>{
+    const temDados=balas.some(c=>c.itens.some(n=>num(doc.data.pesos?.[n])>0||num(doc.data.pacotes?.[n])>0));
+    const aviso=temDados?`Excluir a contagem de balas de ${fmtD(data)}? Os pesos e pacotes desta data serão apagados do Firebase.`:`Não há valores preenchidos na tela. Mesmo assim deseja apagar qualquer contagem de balas salva em ${fmtD(data)}?`;
+    if(!confirm(aviso))return;
+    await doc.deleteDoc();
+  };
+  const salvarELimpar=async()=>{
+    const ok=await doc.save();
+    if(ok){
+      const pesos={},pacotes={};
+      balas.forEach(c=>c.itens.forEach(n=>{pesos[n]="0";pacotes[n]="0";}));
+      doc.clearLocal({data,pesos,pacotes});
+    }
+  };
+  return <>
+    <div className="htop"><div><h1>Balas a Granel (Kg)</h1><div className="hsub">Peso + pacotes · {balas.reduce((s,c)=>s+c.itens.length,0)} itens · <span style={{color:"var(--fini)"}}>duplo clique na linha para renomear</span></div></div><Status {...doc}/></div>
+    <ErrBox {...doc}/>
+    <div className="toolbar">
+      <div className="tl">
+        <div className="field"><label>Data da contagem</label><input className="inp" type="date" value={data} onChange={e=>setData(e.target.value)}/></div>
+        <div className="field search"><label>Buscar bala</label><input className="inp" placeholder="parte do nome…" value={busca} onChange={e=>setBusca(e.target.value)}/></div>
+      </div>
+      <div className="tl"><button className="btn ghost sm" onClick={()=>setShowM(true)}>⚙️ Gerir Catálogo</button><button className="btn ghost sm danger" onClick={excluirContagem} disabled={doc.status==="load"}>🗑️ Excluir contagem</button><button className="btn primary" onClick={salvarELimpar} disabled={!doc.dirty||doc.status==="load"}>💾 Salvar contagem</button></div>
+    </div>
+    <div className="totbar"><div className="tt"><span>Total em KG</span><b className="hl">{kgF(totalKg)}</b></div><div className="tt"><span>Total Pacotes</span><b>{totalPct.toLocaleString("pt-BR")}</b></div><div className="tt"><span>Tara acrílico</span><div style={{display:"flex",gap:8,alignItems:"center",marginTop:4}}><label style={{display:"flex",gap:5,alignItems:"center",fontSize:12,color:"var(--ink-soft)",fontWeight:700}}><input type="checkbox" checked={descontarTara} onChange={e=>setDescontarTara(e.target.checked)}/> descontar</label><input className="inp pinput-mini" style={{width:78}} value={taraAcrilico} onChange={e=>setTaraAcrilico(e.target.value)} title="Peso do acrílico em kg"/></div></div></div>
+    <div className="ponto-help" style={{marginTop:-4}}>No campo <b>KG</b>, pode digitar soma como <b>1,450+0,098</b>. Com “descontar tara” ativo, o sistema desconta <b>0,732 kg</b> de cada pesagem maior que a tara, para registrar o peso líquido da bala.</div>
+    <div className="panel">
+      <div className="cat"><span>Produto</span><div style={{display:"flex",gap:18,fontSize:10,color:"var(--ink-faint)",fontWeight:700,letterSpacing:".06em",textTransform:"uppercase"}}><span style={{width:95,textAlign:"right"}}>KG</span><span style={{width:78,textAlign:"right"}}>Pacotes</span></div></div>
+      {balas.map(c=>{
+        const its=c.itens.filter(n=>n.toLowerCase().includes(busca.toLowerCase()));
+        if(!its.length)return null;
+        const skKg=c.itens.reduce((a,n)=>a+num(doc.data.pesos?.[n]),0),skPct=c.itens.reduce((a,n)=>a+num(doc.data.pacotes?.[n]),0);
+        return <React.Fragment key={c.cat}>
+          <div className="cat"><span>{c.cat}</span><span className="ct">{kgF(skKg)} · {skPct} pct</span></div>
+          {its.map(n=>{
+            const isEdit=editKey&&editKey.cat===c.cat&&editKey.name===n;
+            return <div className="irow" key={n} onDoubleClick={e=>{if(e.target.closest("input,select,button"))return;startRename(c.cat,n);}} title="Duplo clique na linha para renomear">
+              {isEdit
+                ?<input className="nm-inp" value={editVal} onChange={e=>setEditVal(e.target.value)} onBlur={confirmRename} onKeyDown={e=>{e.key==="Enter"&&confirmRename();e.key==="Escape"&&setEditKey(null);}} autoFocus/>
+                :<span className="nm editable" title="Duplo clique na linha para renomear">{n}</span>
+              }
+              <input className="inp num" style={{width:95}} type="text" inputMode="decimal" value={doc.data.pesos?.[n]??""} placeholder="0,000" onChange={e=>setKg(n,e.target.value)} onFocus={e=>{e.currentTarget.dataset.original=e.currentTarget.value;}} onBlur={e=>{if(e.currentTarget.value!==e.currentTarget.dataset.original)setKg(n,normalizaKgCampo(e.target.value,num(taraAcrilico)||TARA_ACRILICO_PADRAO,descontarTara));}} title="Pode digitar soma: 1,450+0,098. Desconta a tara do acrílico se ativo."/>
+              <span className="un">kg</span>
+              <input className="inp num" style={{width:78}} type="text" inputMode="decimal" value={doc.data.pacotes?.[n]??""} placeholder="0" onChange={e=>setPct(n,e.target.value)} onBlur={e=>setPct(n,normalizaSomaCampo(e.target.value,0))} title="Pode digitar soma: 1+1"/>
+              <span className="un">pct</span>
+            </div>;
+          })}
+        </React.Fragment>;
+      })}
+    </div>
+    <div className="foot">Salvo em <b>fini_teresopolis_balas_kg/{data}</b>. Após salvar, a tela zera para a próxima contagem. Use “Excluir contagem” para apagar somente a contagem da data selecionada.</div>
+    {showM&&<ModalBalas balas={balas} onSave={n=>{onSaveBalas(n);setShowM(false);}} onClose={()=>setShowM(false)}/>}
+  </>;
+}
+
+/* ══ COMPARATIVO ══ */
+function Comparativo({itens,balas}){
+  const [datas,setDatas]=useState([]);
+  const [dA,setDA]=useState("");
+  const [dB,setDB]=useState("");
+  const [res,setRes]=useState(null);
+  const [loading,setLoading]=useState(false);
+  const todasBalas=useMemo(()=>balas.flatMap(c=>c.itens.map(n=>({cat:c.cat,nome:n}))),[balas]);
+  useEffect(()=>{(async()=>{try{const [se,sb]=await Promise.all([db.collection("fini_teresopolis_estoque_quiosque").get(),db.collection("fini_teresopolis_balas_kg").get()]);const s=new Set([...se.docs.map(d=>d.id),...sb.docs.map(d=>d.id)]);const sorted=[...s].filter(d=>/^\d{4}-\d{2}-\d{2}$/.test(d)).sort();setDatas(sorted);if(sorted.length>=2){setDA(sorted[sorted.length-2]);setDB(sorted[sorted.length-1]);}}catch(e){console.error(e);}})();},[]);
+  const comparar=async()=>{if(!dA||!dB)return;setLoading(true);setRes(null);try{const [eA,eB,bA,bB]=await Promise.all([db.collection("fini_teresopolis_estoque_quiosque").doc(dA).get(),db.collection("fini_teresopolis_estoque_quiosque").doc(dB).get(),db.collection("fini_teresopolis_balas_kg").doc(dA).get(),db.collection("fini_teresopolis_balas_kg").doc(dB).get()]);setRes({iA:eA.exists?eA.data().itens||{}:{},iB:eB.exists?eB.data().itens||{}:{},pA:bA.exists?bA.data().pesos||{}:{},pB:bB.exists?bB.data().pesos||{}:{},pkA:bA.exists?bA.data().pacotes||{}:{},pkB:bB.exists?bB.data().pacotes||{}:{}});}catch(e){console.error(e);}setLoading(false);};
+  const dc=v=>v>0?"d-pos":v<0?"d-neg":"d-z";
+  const ds=v=>v>0?"+"+v:String(v);
+  const dkg=v=>{if(v===0)return"=";const a=kgF(Math.abs(v));return v>0?"+"+a:"-"+a;};
+  return <>
+    <div className="htop"><div><h1>Comparativo de Contagens</h1><div className="hsub">Diferença entre duas contagens — vendas e reposições estimadas</div></div></div>
+    <div className="toolbar">
+      <div className="tl">
+        <div className="field"><label>Contagem Anterior (A)</label><select className="inp" value={dA} onChange={e=>setDA(e.target.value)}><option value="">Selecione…</option>{datas.map(d=><option key={d} value={d}>{fmtD(d)}</option>)}</select></div>
+        <div style={{display:"flex",alignItems:"flex-end",paddingBottom:3,color:"var(--ink-faint)",fontWeight:700}}>→</div>
+        <div className="field"><label>Contagem Atual (B)</label><select className="inp" value={dB} onChange={e=>setDB(e.target.value)}><option value="">Selecione…</option>{datas.map(d=><option key={d} value={d}>{fmtD(d)}</option>)}</select></div>
+      </div>
+      <button className="btn primary" onClick={comparar} disabled={!dA||!dB||loading}>{loading?"Carregando…":"🔍 Comparar"}</button>
+    </div>
+    {!res&&!loading&&<div style={{textAlign:"center",padding:"50px 20px",color:"var(--ink-faint)"}}><div style={{fontSize:40,marginBottom:12}}>📊</div><div>Selecione duas datas e clique em Comparar.</div></div>}
+    {res&&<>
+      <div className="totbar"><div className="tt"><span>Período</span><b>{fmtD(dA)} → {fmtD(dB)}</b></div><div className="tt"><span style={{color:"var(--green)"}}>🟢 Positivo</span><b style={{color:"var(--green)"}}>Vendido/Consumido</b></div><div className="tt"><span style={{color:"var(--blue)"}}>🔵 Negativo</span><b style={{color:"var(--blue)"}}>Reposto/Corrigido</b></div></div>
+      <div style={{marginBottom:20}}>
+        <div style={{fontFamily:"'Fraunces',serif",fontWeight:700,fontSize:17,margin:"0 0 10px"}}>📦 Itens do Quiosque</div>
+        <div className="panel"><table><thead><tr><th>Produto</th><th style={{width:105,textAlign:"right"}}>{fmtD(dA)}</th><th style={{width:105,textAlign:"right"}}>{fmtD(dB)}</th><th style={{width:110,textAlign:"right"}}>Diferença</th></tr></thead><tbody>{itens.filter(n=>num(res.iA[n])||num(res.iB[n])).map(n=>{const a=num(res.iA[n]),b=num(res.iB[n]),d=a-b;return <tr key={n}><td>{n}</td><td className="num">{a||"—"}</td><td className="num">{b||"—"}</td><td className={"num "+dc(d)}>{d?ds(d):"="}</td></tr>;})}
+        {!itens.filter(n=>num(res.iA[n])||num(res.iB[n])).length&&<tr><td colSpan="4" style={{textAlign:"center",padding:22,color:"var(--ink-faint)"}}>Nenhum dado nas datas selecionadas.</td></tr>}</tbody></table></div>
+      </div>
+      <div>
+        <div style={{fontFamily:"'Fraunces',serif",fontWeight:700,fontSize:17,margin:"0 0 10px"}}>🍬 Balas a Granel</div>
+        <div className="panel"><table><thead><tr><th>Produto</th><th style={{width:105,textAlign:"right"}}>KG {fmtD(dA)}</th><th style={{width:105,textAlign:"right"}}>KG {fmtD(dB)}</th><th style={{width:115,textAlign:"right"}}>Δ KG</th><th style={{width:78,textAlign:"right"}}>Pct A</th><th style={{width:78,textAlign:"right"}}>Pct B</th><th style={{width:78,textAlign:"right"}}>Δ Pct</th></tr></thead><tbody>{todasBalas.filter(({nome:n})=>num(res.pA[n])||num(res.pB[n])||num(res.pkA[n])||num(res.pkB[n])).map(({cat,nome:n})=>{const kA=num(res.pA[n]),kB=num(res.pB[n]),dk=kA-kB,pA=num(res.pkA[n]),pB=num(res.pkB[n]),dp=pA-pB;return <tr key={n}><td><span style={{fontSize:10.5,color:"var(--ink-faint)",marginRight:5}}>[{cat}]</span>{n}</td><td className="num">{kA?kgF(kA):"—"}</td><td className="num">{kB?kgF(kB):"—"}</td><td className={"num "+dc(dk)}>{dkg(dk)}</td><td className="num">{pA||"—"}</td><td className="num">{pB||"—"}</td><td className={"num "+dc(dp)}>{dp?ds(dp):"="}</td></tr>;})}
+        </tbody></table></div>
+      </div>
+    </>}
+    <div className="foot">Diferença = A − B. 🟢 Positivo = consumido/vendido. 🔵 Negativo = reabastecido.</div>
+  </>;
+}
+
+/* ══ DESPERDÍCIO ══ */
+function Desperdicio(){
+  const [ano,setAno]=useState(hjD.getFullYear());
+  const [mes,setMes]=useState(hjD.getMonth());
+  const doc=useFireDoc("fini_teresopolis_desperdicio",keyMes(ano,mes),{entradas:[]});
+  const ents=doc.data.entradas||[];
+  const add=()=>doc.update(d=>({entradas:[...(d.entradas||[]),{data:HOJE,produto:"",quantidade:"",unidade:"UN",motivo:MOTIVOS[0],responsavel:""}]}));
+  const upd=(i,k,v)=>doc.update(d=>{const e=[...d.entradas];e[i]={...e[i],[k]:v};return{entradas:e};});
+  const del=i=>doc.update(d=>({entradas:d.entradas.filter((_,j)=>j!==i)}));
+  return <>
+    <div className="htop"><div><h1>Desperdício</h1><div className="hsub">Registro de perdas por produto</div></div><Status {...doc}/></div>
+    <ErrBox {...doc}/>
+    <div className="toolbar"><MonthNav {...{ano,mes,setAno,setMes,dirty:doc.dirty}}/><div className="tl"><button className="btn ghost" onClick={add}>＋ Registrar Perda</button><button className="btn primary" onClick={()=>doc.save()} disabled={!doc.dirty||doc.status==="load"}>💾 Salvar mês</button></div></div>
+    <div className="totbar"><div className="tt"><span>Hoje</span><b className="hl">{ents.filter(e=>e.data===HOJE).length}</b></div><div className="tt"><span>Total no mês</span><b>{ents.length}</b></div></div>
+    <div className="panel"><table><thead><tr><th style={{width:130}}>Data</th><th>Produto</th><th style={{width:90}}>Qtd</th><th style={{width:70}}>Un.</th><th style={{width:155}}>Motivo</th><th>Responsável</th><th style={{width:34}}></th></tr></thead>
+    <tbody>{ents.map((e,i)=><tr key={i}><td><input type="date" value={e.data||HOJE} onChange={ev=>upd(i,"data",ev.target.value)}/></td><td><input value={e.produto||""} placeholder="produto" onChange={ev=>upd(i,"produto",ev.target.value)}/></td><td><input className="num" type="number" step="0.001" value={e.quantidade||""} placeholder="0" onChange={ev=>upd(i,"quantidade",ev.target.value)}/></td><td><select value={e.unidade||"UN"} onChange={ev=>upd(i,"unidade",ev.target.value)}><option>UN</option><option>KG</option><option>L</option><option>PCT</option></select></td><td><select value={e.motivo||MOTIVOS[0]} onChange={ev=>upd(i,"motivo",ev.target.value)}>{MOTIVOS.map(m=><option key={m}>{m}</option>)}</select></td><td><input value={e.responsavel||""} placeholder="funcionário" onChange={ev=>upd(i,"responsavel",ev.target.value)}/></td><td><button className="rm" onClick={()=>del(i)}>✕</button></td></tr>)}
+    {!ents.length&&<tr><td colSpan="7" style={{textAlign:"center",padding:24,color:"var(--ink-faint)"}}>Nenhum registro. Clique em "＋ Registrar Perda".</td></tr>}
+    </tbody></table></div>
+    <div className="foot">Salvo em <b>fini_teresopolis_desperdicio/{keyMes(ano,mes)}</b>.</div>
+  </>;
+}
+
+/* ══ CAIXA ══ */
+function Caixa(){
+  const [ano,setAno]=useState(hjD.getFullYear());
+  const [mes,setMes]=useState(hjD.getMonth());
+  const diaInicial=(ano===hjD.getFullYear()&&mes===hjD.getMonth())?pad(hjD.getDate()):"01";
+  const [diaTroco,setDiaTroco]=useState(diaInicial);
+  const doc=useFireDoc("fini_teresopolis_caixa",keyMes(ano,mes),{dias:{},inicialMes:""});
+  const nd=diMes(ano,mes),dias=doc.data.dias||{};
+  useEffect(()=>{const max=diMes(ano,mes);if(Number(diaTroco)>max)setDiaTroco(pad(max));},[ano,mes]);
+  const linhas=[];let prev=num(doc.data.inicialMes);
+  for(let i=1;i<=nd;i++){const dd=pad(i),d=dias[dd]||{};const ini=d.inicial!==undefined&&d.inicial!==""?num(d.inicial):prev;const total=ini+num(d.entrada)-num(d.saida);linhas.push({dd,ini,entrada:d.entrada,saida:d.saida,obs:d.obs,forma:d.forma,total,inicialRaw:d.inicial});prev=total;}
+  const set=(dd,k,v)=>doc.update(d=>({dias:{...d.dias,[dd]:{...d.dias?.[dd],[k]:v}}}));
+  const setTroco=(den,v)=>doc.update(d=>{const dia=d.dias?.[diaTroco]||{};return{dias:{...d.dias,[diaTroco]:{...dia,troco:{...(dia.troco||{}),[String(den)]:v}}}};});
+  const trocoDia=(dias[diaTroco]||{}).troco||{};
+  const totalTroco=DENOMS_TROCO.reduce((s,den)=>s+(num(trocoDia[String(den)])*den),0);
+  const tF=linhas.length?linhas[linhas.length-1].total:0,tE=linhas.reduce((s,l)=>s+num(l.entrada),0),tS=linhas.reduce((s,l)=>s+num(l.saida),0);
+  return <>
+    <div className="htop"><div><h1>Caixa · Troco</h1><div className="hsub">Total = inicial + entrada − saída · conferência de troco por notas e moedas</div></div><Status {...doc}/></div>
+    <ErrBox {...doc}/>
+    <div className="toolbar"><MonthNav {...{ano,mes,setAno,setMes,dirty:doc.dirty}}/><div className="tl"><div className="field"><label>Inicial do mês</label><input className="inp num" type="number" step="0.01" style={{width:115}} value={doc.data.inicialMes??""} placeholder="0,00" onChange={e=>doc.update({inicialMes:e.target.value})}/></div><button className="btn primary" onClick={()=>doc.save()} disabled={!doc.dirty||doc.status==="load"}>💾 Salvar mês</button></div></div>
+    <div className="totbar"><div className="tt"><span>Entradas</span><b style={{color:"var(--green)"}}>{brl(tE)}</b></div><div className="tt"><span>Saídas</span><b style={{color:"var(--fini)"}}>{brl(tS)}</b></div><div className="tt"><span>Saldo final</span><b className="hl">{brl(tF)}</b></div><div className="tt"><span>Troco conferido</span><b>{brl(totalTroco)}</b></div></div>
+    <div className="panel" style={{marginBottom:16}}>
+      <div className="cat"><span>Conferência de Troco</span><span className="ct">{diaTroco}/{pad(mes+1)} · {brl(totalTroco)}</span></div>
+      <div style={{padding:"12px 14px 0",display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}}>
+        <div className="field"><label>Dia da conferência</label><select className="inp" value={diaTroco} onChange={e=>setDiaTroco(e.target.value)}>{Array.from({length:nd},(_,i)=>pad(i+1)).map(dd=><option key={dd} value={dd}>{dd}/{pad(mes+1)} · {WD[new Date(ano,mes,Number(dd)).getDay()]}</option>)}</select></div>
+        <div style={{fontSize:12,color:"var(--ink-soft)",lineHeight:1.4}}>Informe a quantidade de cada moeda/nota existente na loja. O total é calculado automaticamente.</div>
+      </div>
+      <div className="troco-grid">
+        {DENOMS_TROCO.map(den=>{const qtd=trocoDia[String(den)]??"";const tot=num(qtd)*den;return <div className="troco-cell" key={den}>
+          <div className="den">{brl(den)}</div>
+          <input type="number" min="0" step="1" value={qtd} placeholder="Qtd" onChange={e=>setTroco(den,e.target.value)}/>
+          <div className="ttl">{brl(tot)}</div>
+        </div>;})}
+      </div>
+    </div>
+    <div className="panel"><table><thead><tr><th style={{width:115}}>Data</th><th style={{width:110}}>Inicial</th><th style={{width:110}}>Entrada</th><th style={{width:110}}>Saída</th><th style={{width:140}}>Forma Pgto.</th><th style={{width:130}}>Obs</th><th style={{width:115}}>Total</th></tr></thead>
+    <tbody>{linhas.map(l=>{const dt=new Date(ano,mes,Number(l.dd)),dow=dt.getDay(),isHj=`${ano}-${pad(mes+1)}-${l.dd}`===HOJE;return <tr key={l.dd} className={(isHj?"hojerow ":"")+"wd-"+["dom","seg","ter","qua","qui","sex","sab"][dow]}><td className="num">{l.dd}/{pad(mes+1)} · {WD[dow]}</td><td><input className="num" type="number" step="0.01" value={l.inicialRaw??""} placeholder={l.ini.toFixed(2)} onChange={e=>set(l.dd,"inicial",e.target.value)}/></td><td><input className="num" type="number" step="0.01" value={l.entrada??""} placeholder="0,00" onChange={e=>set(l.dd,"entrada",e.target.value)}/></td><td><input className="num" type="number" step="0.01" value={l.saida??""} placeholder="0,00" onChange={e=>set(l.dd,"saida",e.target.value)}/></td><td><select value={l.forma||""} onChange={e=>set(l.dd,"forma",e.target.value)}><option value="">—</option>{FORMAS.map(f=><option key={f}>{f}</option>)}</select></td><td><input className="caixa-obs" value={l.obs??""} placeholder="—" onChange={e=>set(l.dd,"obs",e.target.value)}/></td><td className="num"><b className={l.total<0?"neg":""}>{brl(l.total)}</b></td></tr>;})}
+    </tbody></table></div>
+    <div className="foot">Salvo em <b>fini_teresopolis_caixa/{keyMes(ano,mes)}</b>. Inicial em branco = puxa total do dia anterior. A conferência de troco fica salva dentro do dia selecionado.</div>
+  </>;
+}
+
+/* ══ CONSUMO ══ */
+function Consumo({funcCon,onSaveFuncCon}){
+  const [ano,setAno]=useState(hjD.getFullYear());
+  const [mes,setMes]=useState(hjD.getMonth());
+  const [showM,setShowM]=useState(false);
+  const doc=useFireDoc("fini_teresopolis_consumo",keyMes(ano,mes),{entradas:[]});
+  const ents=doc.data.entradas||[];
+  const add=()=>doc.update(d=>({entradas:[...(d.entradas||[]),{func:funcCon[0]||"",data:HOJE,produto:"",peso:"",qtd:""}]}));
+  const upd=(i,k,v)=>doc.update(d=>{const e=[...d.entradas];e[i]={...e[i],[k]:v};return{entradas:e};});
+  const del=i=>doc.update(d=>({entradas:d.entradas.filter((_,j)=>j!==i)}));
+  const pF=funcCon.map(f=>{const peso=ents.filter(e=>e.func===f).reduce((s,e)=>s+num(e.peso),0);return{f,peso,valor:peso*PRECO_CONSUMO_KG};});
+  const totalPeso=ents.reduce((s,e)=>s+num(e.peso),0);
+  const totalValor=totalPeso*PRECO_CONSUMO_KG;
+  return <>
+    <div className="htop"><div><h1>Consumo por Funcionária</h1><div className="hsub">Registro mensal de consumo interno · valor referência {brl(PRECO_CONSUMO_KG)}/kg</div></div><Status {...doc}/></div>
+    <ErrBox {...doc}/>
+    <div className="toolbar"><MonthNav {...{ano,mes,setAno,setMes,dirty:doc.dirty}}/><div className="tl"><button className="btn ghost sm" onClick={()=>setShowM(true)}>⚙️ Funcionárias</button><button className="btn ghost" onClick={add}>＋ Lançamento</button><button className="btn primary" onClick={()=>doc.save()} disabled={!doc.dirty||doc.status==="load"}>💾 Salvar mês</button></div></div>
+    <div className="totbar">{pF.map(p=><div className="tt" key={p.f}><span>{p.f}</span><b>{kgF(p.peso)}</b><b className="hl" style={{fontSize:16}}>{brl(p.valor)}</b></div>)}<div className="tt"><span>Total geral</span><b>{kgF(totalPeso)}</b><b className="hl" style={{fontSize:16}}>{brl(totalValor)}</b></div></div>
+    <div className="panel"><table><thead><tr><th>Funcionária</th><th>Data</th><th>Produto</th><th style={{width:110}}>Peso (kg)</th><th style={{width:100}}>Valor</th><th style={{width:80}}>Qtd</th><th style={{width:34}}></th></tr></thead>
+    <tbody>{ents.map((e,i)=><tr key={i}><td><select value={e.func||""} onChange={ev=>upd(i,"func",ev.target.value)} style={{width:"100%"}}>{funcCon.map(f=><option key={f}>{f}</option>)}</select></td><td><input type="date" value={e.data||HOJE} onChange={ev=>upd(i,"data",ev.target.value)}/></td><td><input value={e.produto||""} placeholder="produto" onChange={ev=>upd(i,"produto",ev.target.value)}/></td><td><input className="num" type="number" step="0.001" value={e.peso||""} placeholder="0,000" onChange={ev=>upd(i,"peso",ev.target.value)}/></td><td className="num"><b>{brl(num(e.peso)*PRECO_CONSUMO_KG)}</b></td><td><input className="num" type="number" step="1" value={e.qtd||""} placeholder="0" onChange={ev=>upd(i,"qtd",ev.target.value)}/></td><td><button className="rm" onClick={()=>del(i)}>✕</button></td></tr>)}
+    {!ents.length&&<tr><td colSpan="7" style={{textAlign:"center",padding:24,color:"var(--ink-faint)"}}>Nenhum lançamento.</td></tr>}
+    </tbody></table></div>
+    <div className="foot">Salvo em <b>fini_teresopolis_consumo/{keyMes(ano,mes)}</b>. O valor é calculado por {brl(PRECO_CONSUMO_KG)} por kg.</div>
+    {showM&&<ModalFuncCon funcs={funcCon} onSave={l=>{onSaveFuncCon(l);setShowM(false);}} onClose={()=>setShowM(false)}/>}  
+  </>;
+}
+
+/* ══ ESCALA ══ */
+function gerarCels(ano,mes){const p=new Date(ano,mes,1),s=new Date(p);s.setDate(1-p.getDay());const c=[];for(let i=0;i<42;i++){const d=new Date(s);d.setDate(s.getDate()+i);c.push({date:d,dentro:d.getMonth()===mes,iso:isoDia(d.getFullYear(),d.getMonth(),d.getDate())});if(i>=34&&d.getMonth()!==mes&&d.getDay()===6)break;}return c;}
+
+function Escala({funcEsc,onSaveFuncEsc}){
+  const [ano,setAno]=useState(hjD.getFullYear());
+  const [mes,setMes]=useState(hjD.getMonth());
+  const [showM,setShowM]=useState(false);
+  const doc=useFireDoc("fini_teresopolis_escala",keyMes(ano,mes),{dias:{},anotacoes:"",feriados:{}});
+  const cells=useMemo(()=>gerarCels(ano,mes),[ano,mes]);
+  const funcs=useMemo(()=>listaFuncionarias(funcEsc),[funcEsc]);
+  const dias=doc.data.dias||{},fer=doc.data.feriados||{};
+  const especial=(date,iso)=>date.getDay()===0||!!fer[iso];
+  const getEscala=(dd,date,iso)=>normalizarEscalaDia(dias[dd],especial(date,iso),funcs);
+  const setDia=(dd,next)=>doc.update(d=>({dias:{...d.dias,[dd]:next}}));
+  const updateFolga=(dd,date,iso,nome)=>setDia(dd,{...getEscala(dd,date,iso),folga:nome});
+  const updateSlot=(dd,date,iso,idx,slot)=>{const base=getEscala(dd,date,iso);const slots=[...base.slots];slots[idx]=slot;setDia(dd,{...base,slots});};
+  const toggleFer=iso=>doc.update(d=>{const n={...d.feriados};if(n[iso])delete n[iso];else n[iso]=true;return{feriados:n};});
+
+  const limparNomesTodosMeses=async()=>{
+    if(!confirm("Apagar os nomes/folgas salvos dentro dos dias de TODOS os meses da escala? Os horários, feriados e anotações serão mantidos."))return;
+    try{
+      const snap=await db.collection("fini_teresopolis_escala").get();
+      const batch=db.batch();
+      snap.docs.forEach(docSnap=>{
+        const data=docSnap.data()||{};
+        const diasOrig=data.dias||{};
+        const diasLimpos={};
+        Object.entries(diasOrig).forEach(([dd,raw])=>{
+          if(Array.isArray(raw)){
+            diasLimpos[dd]={folga:"",slots:raw.filter(e=>e&&!e.folga).map(e=>({hora:e.hora||"",nome:""}))};
+          }else if(raw&&typeof raw==="object"){
+            diasLimpos[dd]={...raw,folga:"",folgaNome:"",slots:Array.isArray(raw.slots)?raw.slots.map(s=>({...s,nome:""})):[]};
+          }else{
+            diasLimpos[dd]=raw;
+          }
+        });
+        batch.set(docSnap.ref,{dias:diasLimpos,atualizadoEm:new Date().toISOString()},{merge:true});
+      });
+      await batch.commit();
+      await doc.reload();
+      alert("Nomes apagados dos dias em todos os meses da escala. Horários e feriados foram mantidos.");
+    }catch(e){
+      console.error(e);
+      alert("Não foi possível limpar todos os meses. Verifique a conexão e as permissões do Firebase.");
+    }
+  };
+
+  const resumo=useMemo(()=>{
+    const nd=diMes(ano,mes);
+    return funcs.map(f=>{
+      let trab=0,turnos=0,dom=0,fer_=0,folgas=0,alertas=0;
+      for(let i=1;i<=nd;i++){
+        const date=new Date(ano,mes,i),dd=pad(i),iso=isoDia(ano,mes,i);
+        const esc=normalizarEscalaDia(dias[dd],especial(date,iso),funcs);
+        const nomesTrab=esc.slots.map(s=>s.nome).filter(Boolean);
+        const diaTrab=nomesTrab.includes(f.nome);
+        const qtTurnos=nomesTrab.filter(n=>n===f.nome).length;
+        const confl=conflitosEscalaDia(esc);
+        if(diaTrab){
+          trab++;
+          turnos+=qtTurnos;
+          if(date.getDay()===0)dom++;
+          if(fer[iso])fer_++;
+        }
+        if(esc.folga===f.nome)folgas++;
+        if(confl.some(a=>a.includes(f.nome)))alertas++;
+      }
+      return{nome:f.nome,cor:f.cor,trab,turnos,dom,fer:fer_,folgas,alertas};
+    });
+  },[ano,mes,dias,fer,funcs]);
+
+  const totalAlertas=useMemo(()=>{
+    let t=0;
+    for(let i=1;i<=diMes(ano,mes);i++){
+      const date=new Date(ano,mes,i),dd=pad(i),iso=isoDia(ano,mes,i);
+      if(conflitosEscalaDia(normalizarEscalaDia(dias[dd],especial(date,iso),funcs)).length)t++;
+    }
+    return t;
+  },[ano,mes,dias,fer,funcs]);
+
+  return <>
+    <div className="htop"><div><h1>Escala de Trabalho</h1><div className="hsub">Folga em primeiro lugar · horários editáveis · escolha da funcionária por horário · brancos permitidos</div></div><Status {...doc}/></div>
+    <ErrBox {...doc}/>
+    <div className="toolbar">
+      <MonthNav {...{ano,mes,setAno,setMes,dirty:doc.dirty}}/>
+      <div className="tl">
+        <button className="btn ghost sm" onClick={()=>setShowM(true)}>⚙️ Funcionárias</button>
+        <button className="btn ghost sm" onClick={limparNomesTodosMeses}>🧹 Limpar nomes salvos</button>
+        <button className="btn ghost sm" onClick={()=>window.print()}>🖨 Imprimir</button>
+        <button className="btn primary" onClick={()=>doc.save()} disabled={!doc.dirty||doc.status==="load"}>💾 Salvar mês</button>
+      </div>
+    </div>
+
+
+    <div className="totbar">
+      <div className="tt"><span>Funcionárias cadastradas</span><b>{funcs.length}</b></div>
+      <div className="tt"><span>Modelo dias de semana</span><b>{H_SEMANA.join(" · ")}</b></div>
+      <div className="tt"><span>Modelo dom./feriado</span><b>{H_DOM_FER.map(h=>h||"aberto").join(" · ")}</b></div>
+      <div className="tt"><span>Alertas no mês</span><b className={totalAlertas?"hl":""}>{totalAlertas}</b></div>
+    </div>
+
+    <div className="egrid">
+      {WD.map((w,i)=><div className={"ewd"+(i===0?" dom":i===6?" sab":"")} key={w}>{w}</div>)}
+      {cells.map((c,idx)=>{
+        if(!c.dentro)return <div className="ecell out" key={idx}></div>;
+        const dd=pad(c.date.getDate());
+        const isFer=fer[c.iso];
+        const esc=getEscala(dd,c.date,c.iso);
+        const avisos=conflitosEscalaDia(esc);
+        const folgaAlerta=esc.folga&&esc.slots.some(s=>s.nome===esc.folga)?`${esc.folga} também está escalada em horário`:null;
+        const slotAlert=(s)=>{
+          if(!s.nome)return null;
+          if(esc.folga&&s.nome===esc.folga)return `${s.nome} está em folga`;
+          const repetida=esc.slots.filter(x=>x.nome&&x.nome===s.nome).length>1;
+          return repetida?`${s.nome} aparece mais de uma vez no dia`:null;
+        };
+        return(
+          <div className={"ecell"+(c.iso===HOJE?" today":"")+(avisos.length?" warn":"")} key={idx} title={avisos.join(" · ")}>
+            <div className="dnum">
+              <span>{c.date.getDate()}</span>
+              <span className="ebadges">
+                {avisos.length>0&&<span className="badge warn">ajustar</span>}
+                <span className={"badge"+(isFer?"":" off")} onClick={()=>toggleFer(c.iso)}>{isFer?"feriado":"?"}</span>
+              </span>
+            </div>
+            <div className="ce-rows">
+              <EscalaFolgaRow nome={esc.folga} funcs={funcs} onChange={nome=>updateFolga(dd,c.date,c.iso,nome)} alerta={folgaAlerta}/>
+              {esc.slots.map((s,i)=><EscalaSlot key={i} slot={s} idx={i} funcs={funcs} alerta={slotAlert(s)} onChange={slot=>updateSlot(dd,c.date,c.iso,i,slot)}/>)}
+            </div>
+            {especial(c.date,c.iso)&&<div className="es-mini"><b>Dom/Feriado:</b> 3 horários</div>}
+          </div>
+        );
+      })}
+    </div>
+
+    <div style={{margin:"16px 0 14px"}}>
+      <div style={{fontFamily:"'Fraunces',serif",fontWeight:700,fontSize:16,marginBottom:10,color:"var(--ink)"}}>📋 Resumo do Mês — {MESES[mes]} {ano}</div>
+      <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
+        {resumo.map(r=>(
+          <div key={r.nome} style={{background:"var(--card)",border:"1px solid var(--line)",borderRadius:14,padding:"14px 18px",boxShadow:"var(--shadow)",minWidth:190,flex:"1 1 190px"}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:12,paddingBottom:10,borderBottom:"1px solid var(--line-soft)"}}>
+              <span style={{width:11,height:11,borderRadius:"50%",background:r.cor,flexShrink:0,display:"inline-block"}}></span>
+              <span style={{fontWeight:700,fontSize:14}}>{r.nome}</span>
+              {r.alertas>0&&<span style={{marginLeft:"auto",fontSize:10,color:"#b77700"}} title="Verificar escala">⚠ {r.alertas}</span>}
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>
+              <div>
+                <div style={{fontSize:9.5,color:"var(--ink-faint)",textTransform:"uppercase",letterSpacing:".07em",marginBottom:3}}>Dias</div>
+                <div style={{fontFamily:"'DM Mono'",fontSize:24,fontWeight:500,lineHeight:1}}>{r.trab}</div>
+              </div>
+              <div>
+                <div style={{fontSize:9.5,color:"var(--ink-faint)",textTransform:"uppercase",letterSpacing:".07em",marginBottom:3}}>Turnos</div>
+                <div style={{fontFamily:"'DM Mono'",fontSize:24,fontWeight:500,lineHeight:1}}>{r.turnos}</div>
+              </div>
+              <div>
+                <div style={{fontSize:9.5,color:"var(--ink-faint)",textTransform:"uppercase",letterSpacing:".07em",marginBottom:3}}>Dom/Fer.</div>
+                <div style={{fontFamily:"'DM Mono'",fontSize:24,fontWeight:500,lineHeight:1,color:(r.dom+r.fer)>0?"var(--fini)":"var(--ink-faint)"}}>{r.dom+r.fer}</div>
+              </div>
+              <div>
+                <div style={{fontSize:9.5,color:"var(--ink-faint)",textTransform:"uppercase",letterSpacing:".07em",marginBottom:3}}>Folgas</div>
+                <div style={{fontFamily:"'DM Mono'",fontSize:24,fontWeight:500,lineHeight:1,color:r.folgas>0?"var(--green)":"var(--ink-faint)"}}>{r.folgas}</div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div className="totbar" style={{marginTop:14}}>
+      <div className="tt" style={{flex:1}}>
+        <span>Anotações do mês</span>
+        <textarea className="inp" style={{width:"100%",minHeight:52,resize:"vertical",marginTop:4}} value={doc.data.anotacoes||""} placeholder="Folgas extras, trocas, avisos gerais…" onChange={e=>doc.update({anotacoes:e.target.value})}/>
+      </div>
+    </div>
+    <div className="foot">Salvo em <b>fini_teresopolis_escala/{keyMes(ano,mes)}</b>. O sistema mantém compatibilidade com escalas antigas e converte a visualização para o novo modelo de folga + horários.</div>
+    {showM&&<ModalFuncEsc funcs={funcs} onSave={l=>{onSaveFuncEsc(l);setShowM(false);}} onClose={()=>setShowM(false)}/>}
+  </>;
+}
+
+
+/* ══ FOLHA DE PONTO / BANCO DE HORAS ══ */
+const absMin=m=>Math.abs(Math.round(m||0));
+function durToMin(v){
+  if(v===undefined||v===null||v==="")return 0;
+  let s=String(v).trim().toLowerCase().replace("h",":").replace(",",":");
+  let sign=1;if(s.startsWith("-")){sign=-1;s=s.slice(1);} 
+  const p=s.split(":");
+  const h=parseInt(p[0]||"0",10)||0;
+  const mi=parseInt(p[1]||"0",10)||0;
+  return sign*(h*60+mi);
+}
+function minToDur(m){
+  m=Math.round(m||0);const sign=m<0?"-":"";m=Math.abs(m);
+  return sign+pad(Math.floor(m/60))+":"+pad(m%60);
+}
+function horaToMin(v){
+  if(!v)return null;
+  let s=String(v).trim().toLowerCase().replace("h",":");
+  if(!s)return null;
+  if(!s.includes(":"))s=s+":00";
+  const [h,m="0"]=s.split(":");
+  const hh=parseInt(h,10),mm=parseInt(m,10);
+  if(isNaN(hh)||isNaN(mm))return null;
+  return hh*60+mm;
+}
+function diffHora(a,b){
+  const ia=horaToMin(a),ib=horaToMin(b);
+  if(ia===null||ib===null)return 0;
+  let d=ib-ia;if(d<0)d+=1440;
+  return d;
+}
+function normalizeTipoPonto(tipo){
+  const t=String(tipo||"").trim();
+  if(["Normal 7h","7h","Normal 9:40-18:00","Normal 14:00-22:20","Normal 7h20","7:20h","Trabalho","Domingo 11-17","Domingo 15-21","Domingo 6h","Domingo","Normal"].includes(t))return "";
+  if(["Feriado 11-17","Feriado 15-21","Feriado 6h","Feriado"].includes(t))return "Feriado";
+  if(["Folga compensatória","Folga"].includes(t))return "Folga";
+  if(["Folga bonificada","Folga extra"].includes(t))return "Folga extra";
+  if(["Atestado"].includes(t))return "Atestado";
+  return t;
+}
+function jornadaMinFunc(func){return String(func?.jornada||"7:20h")==="7h"?durToMin("07:00"):durToMin("07:20");}
+function jornadaStrFunc(func){return String(func?.jornada||"7:20h")==="7h"?"07:00":"07:20";}
+function isFolgaTipo(tipo){return ["Folga","Folga extra"].includes(normalizeTipoPonto(tipo));}
+function isFeriadoTipo(tipo){return normalizeTipoPonto(tipo)==="Feriado";}
+function isAtestadoTipo(tipo){return normalizeTipoPonto(tipo)==="Atestado";}
+function isDomingoData(ano,mes,dd){return new Date(ano,mes,Number(dd)).getDay()===0;}
+function escalaSugeridaPonto(ano,mes,dd,func,tipo){
+  const tp=normalizeTipoPonto(tipo);
+  if(tp==="Folga"||tp==="Folga extra"||tp==="Atestado")return {entrada:"",saidaAlmoco:"",retornoAlmoco:"",saida:"",intervalo:"00:00",jornada:"00:00"};
+  if(tp==="Feriado"||isDomingoData(ano,mes,dd))return {entrada:"11:00",saidaAlmoco:"14:00",retornoAlmoco:"14:15",saida:"17:15",intervalo:"00:15",jornada:"06:00"};
+  const jorn=String(func?.jornada||"7:20h");
+  if(jorn==="7h")return {entrada:"09:40",saidaAlmoco:"13:00",retornoAlmoco:"14:00",saida:"17:40",intervalo:"01:00",jornada:"07:00"};
+  return {entrada:"09:40",saidaAlmoco:"13:00",retornoAlmoco:"14:00",saida:"18:00",intervalo:"01:00",jornada:"07:20"};
+}
+function horarioBasePonto(ano,mes,dd,func,tipo){
+  const sug=escalaSugeridaPonto(ano,mes,dd,func,tipo);
+  return {entrada:"",saidaAlmoco:"",retornoAlmoco:"",saida:"",intervalo:sug.intervalo,jornada:sug.jornada};
+}
+function defaultPontoRow(ano,mes,dd,func){return {tipo:"",ajuste:"",obs:"",registrosPonto:[],...horarioBasePonto(ano,mes,dd,func,"")};}
+function aplicarTipoPonto(row,tipo,ano,mes,dd,func){const tp=normalizeTipoPonto(tipo);return {...row,tipo:tp,...horarioBasePonto(ano,mes,dd,func,tp)};}
+function opcoesTipoPonto(){return PONTO_OCORRENCIAS;}
+function rowAtivaPonto(row,ano,mes,dd){
+  const tp=normalizeTipoPonto(row.tipo);
+  if(tp==="Folga"||tp==="Folga extra"||tp==="Atestado"||tp==="Feriado")return true;
+  return Boolean(row.entrada||row.saidaAlmoco||row.retornoAlmoco||row.saida||row.ajuste||row.obs);
+}
+function calcPonto(row,ano,mes,dd,func){
+  const ativa=rowAtivaPonto(row,ano,mes,dd);
+  const tp=normalizeTipoPonto(row.tipo);
+  const ajuste=durToMin(row.ajuste);
+  if(!ativa){return {ativa:false,prevista:0,trabalhada:0,intervalo:0,extra:0,devida:0,banco:0,credito:0,debito:0};}
+  if(tp==="Folga"||tp==="Atestado"){
+    const banco=ajuste;
+    return {ativa:true,prevista:0,trabalhada:0,intervalo:0,extra:Math.max(0,banco),devida:0,banco,credito:Math.max(0,banco),debito:Math.max(0,-banco)};
+  }
+  if(tp==="Folga extra"){
+    const banco=-(jornadaMinFunc(func))+ajuste;
+    return {ativa:true,prevista:0,trabalhada:0,intervalo:0,extra:0,devida:0,banco,credito:Math.max(0,banco),debito:Math.max(0,-banco)};
+  }
+  const prevista=durToMin(row.jornada||escalaSugeridaPonto(ano,mes,dd,func,tp).jornada||jornadaStrFunc(func)||"07:20");
+  const intervalo=(row.saidaAlmoco&&row.retornoAlmoco)?diffHora(row.saidaAlmoco,row.retornoAlmoco):durToMin(row.intervalo);
+  let trabalhada=0;
+  if(row.entrada&&row.saida){trabalhada=Math.max(0,diffHora(row.entrada,row.saida)-intervalo);}
+  let banco=0,extra=0,devida=0;
+  if(tp==="Feriado"){
+    // Feriado compensado: crédito bruto = horas trabalhadas em dobro.
+    // Do crédito bruto, desconta-se a jornada padrão da funcionária (7h ou 7h20),
+    // porque a diferença do dia reduzido fica no banco de horas.
+    const previstaPadrao=jornadaMinFunc(func);
+    banco=(trabalhada*2)-previstaPadrao+ajuste;
+    extra=Math.max(0,banco);
+    devida=Math.max(0,-banco);
+    return {ativa,prevista:previstaPadrao,trabalhada,intervalo,extra,devida,banco,credito:Math.max(0,banco),debito:Math.max(0,-banco)};
+  }else{
+    banco=(trabalhada-prevista)+ajuste;
+    extra=Math.max(0,trabalhada-prevista);
+    devida=Math.max(0,prevista-trabalhada);
+  }
+  return {ativa,prevista,trabalhada,intervalo,extra,devida,banco,credito:Math.max(0,banco),debito:Math.max(0,-banco)};
+}
+function corSaldo(m){return m>0?"psaldo-pos":m<0?"psaldo-neg":"psaldo-zero";}
+function agoraHHMM(){const d=new Date();return pad(d.getHours())+":"+pad(d.getMinutes());}
+const CAMPOS_PONTO=["entrada","saidaAlmoco","retornoAlmoco","saida"];
+const ROTULOS_PONTO={entrada:"Entrada",saidaAlmoco:"Saída almoço",retornoAlmoco:"Volta almoço",saida:"Saída"};
+const SENHA_ADMIN_PONTO="2231";
+
+function FolhaPonto({funcEsc,onSaveFuncEsc}){
+  const [ano,setAno]=useState(hjD.getFullYear());
+  const [mes,setMes]=useState(hjD.getMonth());
+  const [funcNome,setFuncNome]=useState("");
+  const [showM,setShowM]=useState(false);
+  const [pontoId,setPontoId]=useState("");
+  const [pontoMsg,setPontoMsg]=useState("");
+  const [adminPin,setAdminPin]=useState("");
+  const [adminOn,setAdminOn]=useState(false);
+  const doc=useFireDoc("fini_teresopolis_folha_ponto",keyMes(ano,mes),{funcionarias:{},anotacoes:"",status:"Aberto"});
+  const escalaDoc=useFireDoc("fini_teresopolis_escala",keyMes(ano,mes),{dias:{},anotacoes:"",feriados:{}});
+  const funcs=useMemo(()=>listaFuncionarias(funcEsc),[funcEsc]);
+  const nomesDoc=Object.keys(doc.data.funcionarias||{});
+  const nomes=useMemo(()=>[...new Set([...funcs.map(f=>f.nome),...nomesDoc])].filter(Boolean),[funcs,nomesDoc.join("|")]);
+  useEffect(()=>{if(!funcNome&&nomes.length)setFuncNome(nomes[0]);},[nomes.join("|"),funcNome]);
+  const funcAtual=funcs.find(f=>f.nome===funcNome)||{nome:funcNome,jornada:"7:20h",cor:CORES[0]};
+  const dadosFunc=(doc.data.funcionarias||{})[funcNome]||{saldoInicial:"",dias:{}};
+  const dias=dadosFunc.dias||{};
+  const escalaMes=escalaDoc.data||{dias:{},feriados:{}};
+  const diasEscala=escalaMes.dias||{};
+  const ferEscala=escalaMes.feriados||{};
+  const nd=diMes(ano,mes);
+  const tipoAutoEscala=(dd,func=funcAtual)=>{
+    const dt=new Date(ano,mes,Number(dd));
+    const iso=isoDia(ano,mes,Number(dd));
+    const ehFeriado=!!ferEscala[iso];
+    const esc=normalizarEscalaDia(diasEscala[dd],dt.getDay()===0||ehFeriado,funcs);
+    if(ehFeriado)return "Feriado";
+    return esc.folga&&esc.folga===func.nome?"Folga":"";
+  };
+  const temRegistroPonto=raw=>Boolean(raw.entrada||raw.saidaAlmoco||raw.retornoAlmoco||raw.saida||raw.ajuste||raw.obs||(raw.registrosPonto||[]).length);
+  const devePuxarTipoEscala=raw=>!raw.tipoManual&&!raw.tipo&&!temRegistroPonto(raw);
+  const getRow=dd=>{
+    const raw={...(dias[dd]||{})};
+    const tp=normalizeTipoPonto(raw.tipo);
+    const base=defaultPontoRow(ano,mes,dd,funcAtual);
+    const autoEscala=tipoAutoEscala(dd);
+    const autoTipo=(!raw.tipoManual&&autoEscala)?autoEscala:(devePuxarTipoEscala(raw)?autoEscala:"");
+    const row={...base,...raw,tipo:tp||autoTipo};
+    if(autoTipo&&!raw.tipo){row.tipoAutoEscala=true;}
+    if(!raw.tipo&&!autoTipo){row.tipo="";}
+    // Se era um tipo antigo salvo, normaliza para a nova lógica e mantém horários editados, se existirem.
+    if(raw.tipo&&tp!==raw.tipo){row.tipo=tp;}
+    return row;
+  };
+  const liberarAdmin=()=>{
+    if(adminOn){setAdminOn(false);setAdminPin("");setPontoMsg("Edição administrativa bloqueada.");return;}
+    if(String(adminPin||"").trim()===SENHA_ADMIN_PONTO){setAdminOn(true);setAdminPin("");setPontoMsg("✅ Edição administrativa liberada.");}
+    else{setPontoMsg("Senha administrativa inválida.");}
+  };
+  const exigirAdmin=()=>{if(adminOn)return true;setPontoMsg("Digite a senha administrativa para alterar horários, limpar dia, saldo ou observações. A coluna Tipo é livre.");return false;};
+  const setFuncPatch=patch=>{if(!exigirAdmin())return;doc.updateAndSave(d=>({funcionarias:{...(d.funcionarias||{}),[funcNome]:{...((d.funcionarias||{})[funcNome]||{dias:{}}),...patch,alteradoManualEm:new Date().toISOString(),alteradoManualPor:"ADMIN"}}}));};
+  const setDia=(dd,k,v)=>{
+    const isTipoLivre=k==="tipo";
+    if(!isTipoLivre&&!exigirAdmin())return;
+    doc.updateAndSave(d=>{
+      const all=d.funcionarias||{};
+      const fd=all[funcNome]||{saldoInicial:"",dias:{}};
+      const base={...defaultPontoRow(ano,mes,dd,funcAtual),...(fd.dias?.[dd]||{})};
+      let row={...base,[k]:v};
+      if(isTipoLivre)row={...aplicarTipoPonto(base,v,ano,mes,dd,funcAtual),tipoManual:true,tipoAutoEscala:false};
+      row={
+        ...row,
+        alteradoManualEm:new Date().toISOString(),
+        alteradoManualPor:isTipoLivre&&!adminOn?"TIPO_LIVRE":"ADMIN"
+      };
+      return {funcionarias:{...all,[funcNome]:{...fd,dias:{...(fd.dias||{}),[dd]:row}}}};
+    });
+    if(isTipoLivre&&!adminOn)setPontoMsg("✅ Tipo do dia salvo. Horários continuam bloqueados para registro somente por ID.");
+  };
+  const limparDia=dd=>{if(!exigirAdmin())return;if(!confirm("Limpar os registros deste dia?"))return;doc.updateAndSave(d=>{
+    const all=d.funcionarias||{};const fd=all[funcNome]||{saldoInicial:"",dias:{}};const ndias={...(fd.dias||{})};delete ndias[dd];
+    return {funcionarias:{...all,[funcNome]:{...fd,dias:ndias,alteradoManualEm:new Date().toISOString(),alteradoManualPor:"ADMIN"}}};
+  });};
+  const resumo=useMemo(()=>{
+    let trab=0,prev=0,extra=0,devida=0,cred=0,deb=0,ativos=0,feriados=0,folgas=0,folgasExtra=0,atestados=0;
+    for(let i=1;i<=nd;i++){
+      const dd=pad(i);
+      const row=getRow(dd);
+      const tp=normalizeTipoPonto(row.tipo);
+      const c=calcPonto(row,ano,mes,dd,funcAtual);
+      if(c.ativa)ativos++;
+      if(tp==="Feriado")feriados++;
+      if(tp==="Folga")folgas++;
+      if(tp==="Folga extra")folgasExtra++;
+      if(tp==="Atestado")atestados++;
+      trab+=c.trabalhada;prev+=c.prevista;extra+=c.extra;devida+=c.devida;cred+=c.credito;deb+=c.debito;
+    }
+    const saldoInicial=durToMin(dadosFunc.saldoInicial);
+    const saldo=saldoInicial+cred-deb;
+    return {ativos,trab,prev,extra,devida,cred,deb,saldoInicial,saldo,feriados,folgas,folgasExtra,atestados};
+  },[JSON.stringify(dias),dadosFunc.saldoInicial,ano,mes,nd,funcAtual.jornada,funcAtual.regime]);
+  const registrarPonto=async()=>{
+    const id=String(pontoId||"").trim();
+    if(!id){setPontoMsg("Digite o ID da funcionária.");return;}
+    const hoje=new Date();
+    if(ano!==hoje.getFullYear()||mes!==hoje.getMonth()){
+      setAno(hoje.getFullYear());setMes(hoje.getMonth());
+      setPontoMsg("Mudei para o mês atual. Digite o ID novamente para registrar.");
+      return;
+    }
+    const f=funcs.find(x=>String(x.id||"").trim()===id);
+    if(!f){setPontoMsg("ID não encontrado. Confira em ⚙️ Funcionárias.");return;}
+    const dd=pad(hoje.getDate());
+    let baseDoc=doc.data;
+    try{
+      const snap=await db.collection("fini_teresopolis_folha_ponto").doc(keyMes(ano,mes)).get();
+      if(snap.exists)baseDoc={...baseDoc,...snap.data()};
+    }catch(e){setPontoMsg("Não consegui conferir o ponto atual no Firebase. Tente novamente.");return;}
+    const all=baseDoc.funcionarias||{};
+    const fd=all[f.nome]||{saldoInicial:"",dias:{}};
+    const raw=fd.dias?.[dd]||{};
+    const autoEscala=tipoAutoEscala(dd,f);
+    const autoTipo=(!raw.tipoManual&&autoEscala)?autoEscala:(devePuxarTipoEscala(raw)?autoEscala:"");
+    let row={...defaultPontoRow(ano,mes,dd,f),...raw,tipo:normalizeTipoPonto(raw.tipo)||autoTipo};
+    if(["Folga","Folga extra","Atestado"].includes(normalizeTipoPonto(row.tipo))){setPontoMsg(`Hoje está marcado como ${row.tipo} para ${f.nome}. Remova o tipo antes de registrar ponto.`);return;}
+    const campo=CAMPOS_PONTO.find(c=>!row[c]);
+    if(!campo){setPontoMsg(`${f.nome} já tem os 4 registros do dia. Use o botão limpar dia se precisar refazer.`);return;}
+    const hora=agoraHHMM();
+    const novoRegistro={campo,hora,registradoEm:new Date().toISOString(),id:f.id,nome:f.nome,origem:"ID_FUNCIONARIA"};
+    row={...row,[campo]:hora,registrosPonto:[...(row.registrosPonto||[]),novoRegistro]};
+    const novoDoc={funcionarias:{[f.nome]:{...fd,dias:{...(fd.dias||{}),[dd]:row}}},atualizadoEm:new Date().toISOString()};
+    setPontoMsg("Salvando registro no Firebase...");
+    try{
+      await db.collection("fini_teresopolis_folha_ponto").doc(keyMes(ano,mes)).set(novoDoc,{merge:true});
+      await doc.reload();
+      setFuncNome(f.nome);
+      setPontoId("");
+      setPontoMsg(`✅ ${ROTULOS_PONTO[campo]} registrada e salva para ${f.nome} às ${hora}.`);
+    }catch(e){
+      console.error("Erro ao registrar ponto",e);
+      setPontoMsg("Não foi possível salvar o registro. Confira a conexão e tente novamente.");
+    }
+  };
+  const salvar=async()=>{const ok=await doc.save();if(ok)alert("Folha de ponto salva com sucesso.");};
+  return <>
+    <div className="htop"><div><h1>Folha de Ponto</h1><div className="hsub">Registro por ID · folgas e feriados puxados automaticamente da Escala salva</div></div><Status {...doc}/></div>
+    <ErrBox {...doc}/>
+    <div className="toolbar">
+      <MonthNav {...{ano,mes,setAno,setMes,dirty:doc.dirty}}/>
+      <div className="tl">
+        <div className="field" style={{minWidth:260,flex:"1 1 260px"}}><label>Funcionária</label><div className="func-chips">{nomes.map(n=><button key={n} type="button" className={"func-chip"+(funcNome===n?" on":"")} onClick={()=>setFuncNome(n)}>{n}</button>)}</div></div>
+        <div className="field"><label>ID ponto</label><input className="inp" style={{width:72}} value={funcAtual.id||""} readOnly title="Altere em ⚙️ Funcionárias"/></div>
+        <div className="field"><label>Jornada padrão</label><input className="inp" style={{width:92}} value={funcAtual.jornada||"7:20h"} readOnly title="Altere em ⚙️ Funcionárias"/></div>
+        <div className="field"><label>Regime</label><input className="inp" style={{width:72}} value={funcAtual.regime||"6x1"} readOnly title="Altere em ⚙️ Funcionárias"/></div>
+        <button className="btn ghost sm" onClick={()=>adminOn?setShowM(true):exigirAdmin()} title="Precisa da senha administrativa">⚙️ Funcionárias</button>
+        <button className="btn ghost sm" onClick={()=>window.print()}>🖨 Imprimir</button>
+        <button className="btn primary" onClick={salvar} disabled={!adminOn||!doc.dirty||doc.status==="load"} title={!adminOn?"Libere a edição administrativa para salvar ajustes manuais":"Salvar mês"}>💾 Salvar mês</button>
+      </div>
+    </div>
+    <div style={{background:"var(--card)",border:"1px solid var(--line)",borderRadius:16,padding:"14px 16px",marginBottom:14,display:"flex",alignItems:"center",gap:12,flexWrap:"wrap",boxShadow:"var(--shadow)"}}>
+      <div className="field"><label>Registrar ponto por ID</label><input className="inp" style={{width:135,fontSize:18,fontWeight:700,textAlign:"center"}} value={pontoId} onChange={e=>setPontoId(e.target.value.replace(/\D/g,""))} onKeyDown={e=>e.key==="Enter"&&registrarPonto()} placeholder="ID" autoComplete="off"/></div>
+      <button className="btn primary" onClick={registrarPonto}>🕒 Registrar próximo ponto</button>
+      <div className="field"><label>Senha admin</label><input className="inp" style={{width:96,textAlign:"center"}} type="password" value={adminPin} onChange={e=>setAdminPin(e.target.value.replace(/\D/g,""))} onKeyDown={e=>e.key==="Enter"&&liberarAdmin()} placeholder="••••" autoComplete="off"/></div>
+      <button className={"btn sm "+(adminOn?"primary":"ghost")} onClick={liberarAdmin}>{adminOn?"🔓 Admin liberado":"🔐 Liberar edição"}</button>
+      <div style={{fontSize:12,color:"var(--ink-soft)",lineHeight:1.45,flex:"1 1 260px"}}>Sequência automática: <b>Entrada</b> → <b>Saída almoço</b> → <b>Volta almoço</b> → <b>Saída</b>. O horário gravado é o do computador.</div>
+      {pontoMsg&&<div style={{width:"100%",fontSize:13,fontWeight:700,color:pontoMsg.startsWith("✅")?"var(--green)":"var(--fini)"}}>{pontoMsg}</div>}
+    </div>
+    <div className="totbar">
+      <div className="tt"><span>Saldo inicial</span><input className="inp pinput-mini" value={dadosFunc.saldoInicial||""} placeholder="00:00" disabled={!adminOn} onChange={e=>setFuncPatch({saldoInicial:e.target.value})}/></div>
+      <div className="tt"><span>Dias lançados</span><b>{resumo.ativos}</b></div>
+      <div className="tt"><span>Feriados</span><b>{resumo.feriados}</b></div>
+      <div className="tt"><span>Folgas extras</span><b className="psaldo-neg">{resumo.folgasExtra}</b></div>
+      <div className="tt"><span>Horas trabalhadas</span><b>{minToDur(resumo.trab)}</b></div>
+      <div className="tt"><span>Horas previstas</span><b>{minToDur(resumo.prev)}</b></div>
+      <div className="tt"><span>Extras</span><b className="psaldo-pos">{minToDur(resumo.extra)}</b></div>
+      <div className="tt"><span>Horas devidas</span><b className="psaldo-neg">{minToDur(resumo.devida)}</b></div>
+      <div className="tt"><span>Crédito banco</span><b className="psaldo-pos">{minToDur(resumo.cred)}</b></div>
+      <div className="tt"><span>Débito banco</span><b className="psaldo-neg">{minToDur(resumo.deb)}</b></div>
+      <div className="tt"><span>Saldo final</span><b className={corSaldo(resumo.saldo)}>{minToDur(resumo.saldo)}</b></div>
+    </div>
+    <div className="panel ponto-scroll">
+      <table className="ponto-table"><thead><tr><th>Data</th><th>Tipo</th><th>Entrada</th><th>Saída almoço</th><th>Retorno</th><th>Saída</th><th>Intervalo</th><th>Trab.</th><th>Extra</th><th>Devida</th><th>Ajuste</th><th>Banco dia</th><th>Obs</th><th></th></tr></thead>
+      <tbody>{Array.from({length:nd},(_,i)=>i+1).map(i=>{
+        const dd=pad(i),dt=new Date(ano,mes,i),row=getRow(dd),calc=calcPonto(row,ano,mes,dd,funcAtual),sug=escalaSugeridaPonto(ano,mes,dd,funcAtual,row.tipo),isDom=dt.getDay()===0,isFer=isFeriadoTipo(row.tipo),isFolga=isFolgaTipo(row.tipo),cls=(isFer?" pfer":"")+(isFolga?" pfolga":"")+(calc.banco<0?" palert":"");
+        return <tr key={dd} className={cls}>
+          <td className={(isDom?"pdate pdom":"pdate")}>{dd}/{pad(mes+1)}<div className="pmini">{WD[dt.getDay()]}</div></td>
+          <td className="ptype"><select value={row.tipo||""} onChange={e=>setDia(dd,"tipo",e.target.value)}><option value="">Normal</option>{opcoesTipoPonto().map(t=><option key={t}>{t}</option>)}</select>{row.tipoAutoEscala&&<div className="pmini">Puxado da escala</div>}</td>
+          <td><input className="pinput-mini" value={row.entrada||""} placeholder={sug.entrada||"--:--"} readOnly={!adminOn} onChange={e=>setDia(dd,"entrada",e.target.value)} title={adminOn?"Edição manual liberada":"Registro automático por ID"}/></td>
+          <td><input className="pinput-mini" value={row.saidaAlmoco||""} placeholder={sug.saidaAlmoco||"--:--"} readOnly={!adminOn} onChange={e=>setDia(dd,"saidaAlmoco",e.target.value)} title={adminOn?"Edição manual liberada":"Registro automático por ID"}/></td>
+          <td><input className="pinput-mini" value={row.retornoAlmoco||""} placeholder={sug.retornoAlmoco||"--:--"} readOnly={!adminOn} onChange={e=>setDia(dd,"retornoAlmoco",e.target.value)} title={adminOn?"Edição manual liberada":"Registro automático por ID"}/></td>
+          <td><input className="pinput-mini" value={row.saida||""} placeholder={sug.saida||"--:--"} readOnly={!adminOn} onChange={e=>setDia(dd,"saida",e.target.value)} title={adminOn?"Edição manual liberada":"Registro automático por ID"}/></td>
+          <td><input className="pinput-mini" value={row.intervalo||""} placeholder="00:00" disabled={!adminOn} onChange={e=>setDia(dd,"intervalo",e.target.value)}/></td>
+          <td className="num"><b>{calc.ativa?minToDur(calc.trabalhada):"—"}</b></td>
+          <td className="num psaldo-pos">{calc.extra?minToDur(calc.extra):"—"}</td>
+          <td className="num psaldo-neg">{calc.devida?minToDur(calc.devida):"—"}</td>
+          <td><input className="pinput-mini" value={row.ajuste||""} placeholder="00:00" disabled={!adminOn} onChange={e=>setDia(dd,"ajuste",e.target.value)} title="Ajuste manual: use 01:00 ou -01:00"/></td>
+          <td className={"num "+corSaldo(calc.banco)}><b>{calc.ativa?minToDur(calc.banco):"—"}</b></td>
+          <td><input className="pobs" value={row.obs||""} placeholder="observação" disabled={!adminOn} onChange={e=>setDia(dd,"obs",e.target.value)}/></td>
+          <td><button className="rm" title={adminOn?"Limpar dia":"Precisa da senha administrativa"} disabled={!adminOn} onClick={()=>limparDia(dd)}>🧹</button></td>
+        </tr>;
+      })}</tbody></table>
+    </div>
+    <div className="totbar" style={{marginTop:14}}>
+      <div className="tt" style={{flex:1}}><span>Anotações gerais da folha</span><textarea className="inp" style={{width:"100%",minHeight:52,resize:"vertical",marginTop:4}} value={doc.data.anotacoes||""} disabled={!adminOn} placeholder="Acordos, compensações, folgas bonificadas, justificativas…" onChange={e=>adminOn&&doc.updateAndSave({anotacoes:e.target.value})}/></div>
+      <div className="tt"><span>Status</span><select className="inp" value={doc.data.status||"Aberto"} disabled={!adminOn} onChange={e=>adminOn&&doc.updateAndSave({status:e.target.value})}><option>Aberto</option><option>Conferido</option><option>Fechado</option><option>Compensado/Pago</option></select></div>
+    </div>
+    <div className="foot">Salvo em <b>fini_teresopolis_folha_ponto/{keyMes(ano,mes)}</b>. A jornada normal vem do cadastro da funcionária. Os horários de entrada, almoço, retorno e saída são gravados pelo ID da funcionária com o horário do computador. Para as funcionárias, o ponto só registra por ID com o horário do computador. A coluna Tipo fica liberada sem senha para marcar Feriado, Folga, Folga extra ou Atestado. Quando a aba Escala salva tiver feriado, a Folha de Ponto puxa Feriado automaticamente; quando a funcionária estiver marcada como folga, puxa Folga e zera hora devida; horários, limpeza, saldo inicial e anotações continuam bloqueados pela senha administrativa e são salvos automaticamente no Firebase. Cadastro de funcionárias continua sendo salvo no botão do próprio cadastro.</div>
+    {showM&&adminOn&&<ModalFuncEsc funcs={funcs} onSave={l=>{onSaveFuncEsc(l);setShowM(false);}} onClose={()=>setShowM(false)}/>}  
+  </>;
+}
+
+/* ══ APP ══ */
+const MODS=[{id:"estoque",ic:"📦",lbl:"Itens Quiosque"},{id:"balas",ic:"🍬",lbl:"Balas (Kg)"},{id:"comp",ic:"📊",lbl:"Comparativo"},{id:"desp",ic:"⚠️",lbl:"Desperdício"},{id:"caixa",ic:"💵",lbl:"Caixa / Troco"},{id:"consumo",ic:"🥤",lbl:"Consumo"},{id:"escala",ic:"📅",lbl:"Escala"},{id:"ponto",ic:"🕒",lbl:"Folha de Ponto"}];
+
+function App(){
+  const [aba,setAba]=useState("estoque");
+  const cat=useFireDoc("fini_teresopolis_config","catalogo",{itens:D_ITENS,balas:D_BALAS});
+  const func=useFireDoc("fini_teresopolis_config","funcionarios",{escala:D_ESC,consumo:D_CON});
+  const itens=cat.data.itens||D_ITENS,balas=cat.data.balas||D_BALAS;
+  const funcEsc=func.data.escala||D_ESC,funcCon=func.data.consumo||D_CON;
+  const saveItens=async l=>{await cat.save({...cat.data,itens:l});};
+  const saveBalas=async b=>{await cat.save({...cat.data,balas:b});};
+  const saveFuncEsc=async l=>{await func.save({...func.data,escala:l});};
+  const saveFuncCon=async l=>{await func.save({...func.data,consumo:l});};
+  return <div className="app">
+    <nav className="side">
+      <div className="logo">FINI <em>Teresópolis</em></div>
+      <div className="subtt">Sistema de Gestão · Teresópolis</div>
+      {MODS.map(m=><button key={m.id} className={"navb"+(aba===m.id?" on":"")} onClick={()=>setAba(m.id)}><span className="ic">{m.ic}</span>{m.lbl}</button>)}
+      <div className="sp"></div>
+      <div className="fb">Versão: {APP_VERSION}<br/>Firebase: fini-lancamentos<br/>coleções: fini_teresopolis_*<br/>origem: {window.location.protocol==="file:"?"arquivo local":"site publicado"}</div>
+    </nav>
+    <main className="main">
+      <div style={{background:"#e8fff1",border:"2px solid #3f8f5f",borderRadius:14,padding:"10px 14px",marginBottom:14,fontSize:13,fontWeight:700,color:"#135c35"}}>✅ FINI TERESÓPOLIS · V1 BASE SEPARADA · Firebase e coleções isoladas de Teresópolis.</div>
+      {aba==="estoque"&&<Estoque itens={itens} onSaveItens={saveItens}/>}
+      {aba==="balas"&&<Balas balas={balas} onSaveBalas={saveBalas}/>}
+      {aba==="comp"&&<Comparativo itens={itens} balas={balas}/>}
+      {aba==="desp"&&<Desperdicio/>}
+      {aba==="caixa"&&<Caixa/>}
+      {aba==="consumo"&&<Consumo funcCon={funcCon} onSaveFuncCon={saveFuncCon}/>}
+      {aba==="escala"&&<Escala funcEsc={funcEsc} onSaveFuncEsc={saveFuncEsc}/>}
+      {aba==="ponto"&&<FolhaPonto funcEsc={funcEsc} onSaveFuncEsc={saveFuncEsc}/>}
+    </main>
+  </div>;
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+<!-- Versao Teresopolis V1 2026-06-08: base separada a partir da V20, Firebase Teresopolis, funcionarias e colecoes isoladas -->
+</body>
+</html>
