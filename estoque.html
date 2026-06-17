@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>FINI Teresópolis · V2 Sem Babel</title>
+<title>FINI Teresópolis · V3 Tela Rosa Fix</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script crossorigin src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js"></script>
 <style>
 :root{--paper:#fff5f9;--card:#fffafc;--ink:#2a1018;--ink-soft:#6b4d55;--ink-faint:#b08090;--line:#f0d0dc;--line-soft:#f7e5ec;--fini:#e8266e;--fini-deep:#c01858;--yellow:#f5c000;--green:#3f8f5f;--blue:#3a6ea5;--shadow:0 18px 44px -22px rgba(60,20,40,.35)}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -170,21 +170,41 @@ tr.hojerow{background:#fff5f8}.neg{color:var(--fini)}
 </style>
 </head>
 <body>
-<div id="root"></div>
+<div id="root">
+  <div id="bootScreen" style="font-family:Arial,sans-serif;padding:28px;margin:24px;border:2px solid #e8266e;border-radius:16px;background:#fff;color:#2a1018;max-width:720px">
+    <h2 style="margin:0 0 10px;color:#e8266e">Carregando FINI Teresópolis</h2>
+    <p style="margin:0 0 8px">Versão V3 · correção da tela rosa.</p>
+    <p style="margin:0;color:#6b4d55;font-size:13px">Se esta mensagem ficar parada por mais de 10 segundos, o navegador não carregou alguma biblioteca externa. Reenvie um print desta mensagem.</p>
+  </div>
+</div>
 <script>
 
-window.addEventListener('error', function(e){
+function showBootError(msg, detail){
   try{
     var root=document.getElementById('root');
     if(root && !root.dataset.rendered){
-      root.innerHTML='<div style="font-family:Arial,sans-serif;padding:24px;margin:24px;border:2px solid #e8266e;border-radius:14px;background:#fff;color:#2a1018"><h2 style="margin:0 0 10px;color:#e8266e">Erro ao abrir o sistema FINI Teresópolis</h2><p>O navegador bloqueou ou encontrou erro ao carregar o sistema.</p><pre style="white-space:pre-wrap;background:#fff5f9;padding:12px;border-radius:10px">'+String(e.message||e.error||'erro desconhecido')+'</pre></div>';
+      root.innerHTML='<div style="font-family:Arial,sans-serif;padding:24px;margin:24px;border:2px solid #e8266e;border-radius:14px;background:#fff;color:#2a1018;max-width:850px"><h2 style="margin:0 0 10px;color:#e8266e">Erro ao abrir o sistema FINI Teresópolis</h2><p style="margin:0 0 10px">'+String(msg||'O navegador bloqueou ou encontrou erro ao carregar o sistema.')+'</p><pre style="white-space:pre-wrap;background:#fff5f9;padding:12px;border-radius:10px;overflow:auto">'+String(detail||'erro desconhecido')+'</pre><p style="font-size:12px;color:#6b4d55;margin-top:10px">Versão: TERESÓPOLIS V3 TELA ROSA FIX</p></div>';
     }
   }catch(_){}
+}
+window.addEventListener('error', function(e){
+  showBootError('O navegador encontrou erro de JavaScript antes de montar a tela.', e && (e.message || e.error || e.filename));
 });
+window.addEventListener('unhandledrejection', function(e){
+  showBootError('O sistema encontrou erro ao carregar dados.', e && (e.reason && (e.reason.message || e.reason.code) || e.reason));
+});
+if(!window.React || !window.ReactDOM || !window.firebase){
+  var faltando=[];
+  if(!window.React)faltando.push('React');
+  if(!window.ReactDOM)faltando.push('ReactDOM');
+  if(!window.firebase)faltando.push('Firebase');
+  showBootError('Biblioteca externa não carregou. Verifique internet/cache do navegador.', 'Faltando: '+faltando.join(', '));
+  throw new Error('Dependências externas não carregadas: '+faltando.join(', '));
+}
 const { useState, useEffect, useCallback, useMemo, useRef } = React;
-const FINI_BUILD = "08/06/2026 - TERESOPOLIS_V2_SEM_BABEL_TELA_ROSA_FIX";
+const FINI_BUILD = "17/06/2026 - TERESOPOLIS_V3_TELA_ROSA_FIX";
 console.log("FINI BUILD", FINI_BUILD);
-const APP_VERSION = "08/06/2026 · TERESÓPOLIS V2 SEM BABEL";
+const APP_VERSION = "17/06/2026 · TERESÓPOLIS V3 TELA ROSA FIX";
 /* Firebase */
 const firebaseConfig = {
     apiKey: "AIzaSyDMHK10rl4wPOGqA1JEKGvsUpfLHsIF3Uo",
@@ -1870,10 +1890,30 @@ function App() {
             aba === "escala" && React.createElement(Escala, { funcEsc: funcEsc, onSaveFuncEsc: saveFuncEsc }),
             aba === "ponto" && React.createElement(FolhaPonto, { funcEsc: funcEsc, onSaveFuncEsc: saveFuncEsc })));
 }
-ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App, null));
-try{document.getElementById("root").dataset.rendered="1";}catch(e){}
+class ErrorBoundary extends React.Component{
+  constructor(props){super(props);this.state={erro:null};}
+  static getDerivedStateFromError(error){return {erro:error};}
+  componentDidCatch(error,info){console.error("Erro React FINI Teresópolis",error,info);}
+  render(){
+    if(this.state.erro){
+      return React.createElement("div",{style:{fontFamily:"Arial, sans-serif",padding:24,margin:24,border:"2px solid #e8266e",borderRadius:14,background:"#fff",color:"#2a1018"}},
+        React.createElement("h2",{style:{margin:"0 0 10px",color:"#e8266e"}},"Erro ao montar FINI Teresópolis"),
+        React.createElement("p",null,"O arquivo abriu, mas uma parte do sistema travou ao montar a tela."),
+        React.createElement("pre",{style:{whiteSpace:"pre-wrap",background:"#fff5f9",padding:12,borderRadius:10}},String(this.state.erro && (this.state.erro.message||this.state.erro))))
+    }
+    return this.props.children;
+  }
+}
+try{
+  const rootEl=document.getElementById("root");
+  ReactDOM.createRoot(rootEl).render(React.createElement(ErrorBoundary,null,React.createElement(App,null)));
+  rootEl.dataset.rendered="1";
+}catch(e){
+  console.error(e);
+  showBootError('Erro final ao iniciar o sistema.', e && (e.message || e));
+}
 
 </script>
-<!-- Versao Teresopolis V2 2026-06-17: SEM BABEL para corrigir tela rosa, base separada a partir da V20, Firebase Teresopolis, funcionarias e colecoes isoladas -->
+<!-- Versao Teresopolis V3 2026-06-17: tela rosa fix com boot visivel, dependencia check, sem Babel, Firebase Teresopolis, funcionarias e colecoes isoladas -->
 </body>
 </html>
